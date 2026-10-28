@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SolutionTabs from '../../components/problem/SolutionTabs';
+import VisualizerEngine from '../../components/visualizer/VisualizerEngine';
+import { INITIAL_PROBLEMS } from '../../data/problems';
+import type { LeetCodeProblem } from '../../types/problem';
+import { getUrl } from '../../utils/url';
+
+export async function getStaticPaths() {
+  return INITIAL_PROBLEMS.map((problem) => ({
+    params: { id: problem.id.toString() },
+    props: { problem },
+  }));
+}
+
+interface Props {
+  problem: LeetCodeProblem;
+}
+
+const { problem } = Astro.props;
+
+// Determine previous and next problem for quick navigation
+const currentIndex = INITIAL_PROBLEMS.findIndex((p) => p.id === problem.id);
+const prevProblem = currentIndex > 0 ? INITIAL_PROBLEMS[currentIndex - 1] : undefined;
+const nextProblem = currentIndex < INITIAL_PROBLEMS.length - 1 ? INITIAL_PROBLEMS[currentIndex + 1] : undefined;
+
+const getDifficultyClass = (diff: string) => {
+  switch (diff) {
+    case 'Easy':
+      return 'text-[#34d399] bg-[#062817] border-[#059669]/30';
+    case 'Medium':
+      return 'text-[#fbbf24] bg-[#2a1b04] border-[#d97706]/30';
+    case 'Hard':
+      return 'text-[#f87171] bg-[#2d060a] border-[#dc2626]/30';
+    default:
+      return 'text-text-muted bg-surface-subtle border-border-default';
+  }
+};
+---
+
+<BaseLayout
+  title={`#${problem.id} ${problem.title} | LeetCode 150 Revision`}
+  description={`Step-by-step interactive visual solution and optimal algorithmic approach for #${problem.id} ${problem.title}.`}
+>
+  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- Top Bar: Breadcrumbs & Prev/Next Problem Switcher -->
+    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#262626]">
+      <nav class="flex items-center gap-2 text-xs font-mono text-text-muted">
+        <a href={getUrl("/")} class="hover:text-text-primary transition-colors">Dashboard</a>
+        <span class="text-text-dim">/</span>
+        <a href={getUrl(`/patterns/${problem.pattern}`)} class="hover:text-text-primary transition-colors">{problem.category}</a>
+        <span class="text-text-dim">/</span>
+        <span class="text-text-primary font-medium">#{problem.id} {problem.title}</span>
+      </nav>
+
+      <div class="flex items-center gap-2 font-mono text-xs">
+        {prevProblem ? (
+          <a
+            href={getUrl(`/problem/${prevProblem.id}`)}
+            class="flex items-center gap-1 px-2.5 py-1 rounded bg-[#111111] hover:bg-[#1a1a1a] text-text-muted hover:text-text-primary border border-[#262626] transition-colors"
+            title={`Previous: #${prevProblem.id} ${prevProblem.title}`}
+          >
+            <span>←</span>
+            <span class="hidden sm:inline">#{prevProblem.id}</span>
+          </a>
+        ) : (
+          <span class="px-2.5 py-1 rounded bg-[#0d0d0d] text-text-dim border border-[#1a1a1a] cursor-not-allowed">
+            ← Prev
+          </span>
+        )}
+
+        {nextProblem ? (
+          <a
+            href={getUrl(`/problem/${nextProblem.id}`)}
+            class="flex items-center gap-1 px-2.5 py-1 rounded bg-[#111111] hover:bg-[#1a1a1a] text-text-muted hover:text-text-primary border border-[#262626] transition-colors"
+            title={`Next: #${nextProblem.id} ${nextProblem.title}`}
+          >
+            <span class="hidden sm:inline">#{nextProblem.id}</span>
+            <span>→</span>
+          </a>
+        ) : (
+          <span class="px-2.5 py-1 rounded bg-[#0d0d0d] text-text-dim border border-[#1a1a1a] cursor-not-allowed">
+            Next →
+          </span>
+        )}
+      </div>
+    </div>
+
+    <!-- Problem Header Details -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
+            #{problem.id} {problem.title}
+          </h1>
+          <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono border ${getDifficultyClass(problem.difficulty)}`}>
+            {problem.difficulty}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-text-muted font-sans">
+          <span>Pattern:</span>
+          <a href={getUrl(`/patterns/${problem.pattern}`)} class="text-accent-cyan hover:underline font-mono">
+            {problem.category}
+          </a>
+          <span>•</span>
+          <span>LeetCode Top Interview 150</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-Column Responsive Workspace -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Left Column: Problem Statement & Solution Tabs (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        <!-- Problem Statement Card -->
+        <div class="p-5 rounded-xl bg-[#0a0a0a] border border-[#262626] space-y-4">
+          <h2 class="text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">
+            Problem Statement
+          </h2>
+          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans">
+            {problem.statement}
+          </p>
+
+          <!-- Examples -->
+          {problem.examples.length > 0 && (
+            <div class="space-y-2 pt-2 border-t border-[#1a1a1a]">
+              <span class="text-[11px] font-mono text-text-dim uppercase tracking-wider">Example:</span>
+              <div class="p-3 rounded-lg bg-[#050505] border border-[#1f1f1f] text-xs font-mono space-y-1">
+                <div><span class="text-text-dim">Input:</span> <span class="text-text-primary">{problem.examples[0].input}</span></div>
+                <div><span class="text-text-dim">Output:</span> <span class="text-accent-emerald">{problem.examples[0].output}</span></div>
+                {problem.examples[0].explanation && (
+                  <div class="text-[11px] text-text-muted pt-1"><span class="text-text-dim">Explanation:</span> {problem.examples[0].explanation}</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <!-- Constraints -->
+          {problem.constraints.length > 0 && (
+            <div class="space-y-1.5 pt-2 border-t border-[#1a1a1a]">
+              <span class="text-[11px] font-mono text-text-dim uppercase tracking-wider">Constraints:</span>
+              <ul class="list-disc list-inside text-xs font-mono text-text-muted space-y-0.5">
+                {problem.constraints.map((c) => (
+                  <li>{c}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <!-- Optimal vs Brute Force Solution Tabs Island -->
+        <SolutionTabs
+          client:load
+          optimal={problem.optimal}
+          bruteForce={problem.bruteForce}
+        />
+      </div>
+
+      <!-- Right Column: Algorithm Visualizer Island Container (7 cols) -->
+      <div class="lg:col-span-7 space-y-4">
+        <VisualizerEngine client:load problem={problem} />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

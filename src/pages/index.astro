@@ -1,0 +1,201 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PatternCard from '../components/dashboard/PatternCard.astro';
+import GlobalSearch from '../components/ui/GlobalSearch';
+import { PATTERNS } from '../data/patterns';
+import { INITIAL_PROBLEMS } from '../data/problems';
+import { getUrl } from '../utils/url';
+
+const totalProblems = 150;
+const totalPatterns = PATTERNS.length;
+const easyCount = 42;
+const mediumCount = 85;
+const hardCount = 23;
+
+const getDifficultyClass = (diff: string) => {
+  switch (diff) {
+    case 'Easy':
+      return 'text-[#34d399] bg-[#062817] border-[#059669]/30';
+    case 'Medium':
+      return 'text-[#fbbf24] bg-[#2a1b04] border-[#d97706]/30';
+    case 'Hard':
+      return 'text-[#f87171] bg-[#2d060a] border-[#dc2626]/30';
+    default:
+      return 'text-text-muted bg-surface-subtle border-border-default';
+  }
+};
+---
+
+<BaseLayout
+  title="LeetCode 150 Revision | Algorithmic Patterns & Step-by-Step Visualizer"
+  description="Master all LeetCode Top Interview 150 problems organized into 23 core algorithmic patterns with step-by-step interactive algorithm visualizations."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+    <!-- Hero Header -->
+    <section class="text-center max-w-3xl mx-auto space-y-6 pt-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono text-text-secondary bg-[#111111] border border-[#262626]">
+        <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+        <span>LeetCode Top Interview 150 Complete Blueprint</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-sans">
+        Master Patterns, Not Just Solutions.
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary leading-relaxed font-sans max-w-2xl mx-auto">
+        Deconstruct every interview problem into its fundamental algorithmic pattern. Compare brute-force against optimal approaches and scrub through step-by-step state execution transitions.
+      </p>
+
+      <!-- Search Trigger in Hero -->
+      <div class="flex items-center justify-center pt-2">
+        <GlobalSearch client:load className="w-full max-w-md py-2.5 px-4 text-sm justify-between shadow-lg" />
+      </div>
+    </section>
+
+    <!-- Revision Progress / Stats Overview -->
+    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#262626] shadow-2xl">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#1f1f1f]">
+        <!-- Total Problems -->
+        <div class="space-y-1 pt-4 md:pt-0">
+          <span class="text-xs font-mono text-text-muted uppercase tracking-wider">Curated Problems</span>
+          <div class="text-2xl sm:text-3xl font-bold font-mono text-white flex items-baseline gap-2">
+            <span>{totalProblems}</span>
+            <span class="text-xs text-text-dim font-normal font-sans">Across 23 Patterns</span>
+          </div>
+          <div class="w-full bg-[#171717] h-1.5 rounded-full overflow-hidden mt-2">
+            <div class="bg-white h-full rounded-full" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <!-- Pattern Categories -->
+        <div class="space-y-1 pt-4 md:pt-0 md:pl-6">
+          <span class="text-xs font-mono text-text-muted uppercase tracking-wider">Core Patterns</span>
+          <div class="text-2xl sm:text-3xl font-bold font-mono text-white flex items-baseline gap-2">
+            <span>{totalPatterns}</span>
+            <span class="text-xs text-text-dim font-normal font-sans">Taxonomies</span>
+          </div>
+          <div class="w-full bg-[#171717] h-1.5 rounded-full overflow-hidden mt-2">
+            <div class="bg-accent-cyan h-full rounded-full" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <!-- Difficulty Breakdown -->
+        <div class="space-y-1 pt-4 md:pt-0 md:pl-6">
+          <span class="text-xs font-mono text-text-muted uppercase tracking-wider">Difficulty Distribution</span>
+          <div class="flex items-center gap-3 text-xs font-mono pt-1">
+            <span class="text-[#34d399]">{easyCount} Easy</span>
+            <span class="text-text-dim">•</span>
+            <span class="text-[#fbbf24]">{mediumCount} Medium</span>
+            <span class="text-text-dim">•</span>
+            <span class="text-[#f87171]">{hardCount} Hard</span>
+          </div>
+          <div class="w-full bg-[#171717] h-1.5 rounded-full overflow-hidden mt-2 flex">
+            <div class="bg-[#34d399] h-full" style="width: 28%"></div>
+            <div class="bg-[#fbbf24] h-full" style="width: 57%"></div>
+            <div class="bg-[#f87171] h-full" style="width: 15%"></div>
+          </div>
+        </div>
+
+        <!-- Visualizer Engine -->
+        <div class="space-y-1 pt-4 md:pt-0 md:pl-6">
+          <span class="text-xs font-mono text-text-muted uppercase tracking-wider">Visualizer Engine</span>
+          <div class="text-2xl sm:text-3xl font-bold font-mono text-accent-emerald flex items-baseline gap-2">
+            <span>100%</span>
+            <span class="text-xs text-text-dim font-normal font-sans">Interactive State</span>
+          </div>
+          <div class="w-full bg-[#171717] h-1.5 rounded-full overflow-hidden mt-2">
+            <div class="bg-accent-emerald h-full rounded-full" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Algorithmic Patterns Grid (23 Patterns) -->
+    <section id="patterns" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#262626]">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-white font-sans">
+            Algorithmic Patterns
+          </h2>
+          <p class="text-xs text-text-secondary mt-1 font-sans">
+            Categorized taxonomy of 23 algorithmic techniques with invariant cues and problem sets.
+          </p>
+        </div>
+        <div class="text-xs font-mono text-text-dim">
+          23 Patterns • Click any pattern to inspect
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {PATTERNS.map((pattern) => (
+          <PatternCard pattern={pattern} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Quick Problem Launch Table -->
+    <section id="problems" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#262626]">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-white font-sans">
+            Problem Catalog & Visualizer Hub
+          </h2>
+          <p class="text-xs text-text-secondary mt-1 font-sans">
+            Launch interactive execution visualizers and study optimal vs brute-force solutions.
+          </p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-[#262626] bg-[#0a0a0a]">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[#0f0f0f] border-b border-[#262626] text-text-muted font-mono uppercase tracking-wider text-[11px]">
+            <tr>
+              <th scope="col" class="py-3 px-4">#</th>
+              <th scope="col" class="py-3 px-4">Problem Title</th>
+              <th scope="col" class="py-3 px-4">Pattern Category</th>
+              <th scope="col" class="py-3 px-4">Difficulty</th>
+              <th scope="col" class="py-3 px-4">Optimal Complexity</th>
+              <th scope="col" class="py-3 px-4 text-right">Interactive Visualizer</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#1a1a1a]">
+            {INITIAL_PROBLEMS.map((problem) => (
+              <tr class="hover:bg-[#121212] transition-colors group">
+                <td class="py-3 px-4 font-mono text-text-dim">#{problem.id}</td>
+                <td class="py-3 px-4 font-medium text-text-primary">
+                  <a href={getUrl(`/problem/${problem.id}`)} class="hover:underline flex items-center gap-1.5">
+                    <span>{problem.title}</span>
+                  </a>
+                </td>
+                <td class="py-3 px-4">
+                  <a href={getUrl(`/patterns/${problem.pattern}`)} class="text-text-muted hover:text-accent-cyan transition-colors">
+                    {problem.category}
+                  </a>
+                </td>
+                <td class="py-3 px-4">
+                  <span class={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono border ${getDifficultyClass(problem.difficulty)}`}>
+                    {problem.difficulty}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-mono text-text-dim">
+                  <span class="text-accent-cyan">{problem.optimal.complexity.time}</span>
+                  <span class="text-text-dim mx-1">/</span>
+                  <span class="text-accent-purple">{problem.optimal.complexity.space}</span>
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <a
+                    href={getUrl(`/problem/${problem.id}`)}
+                    class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-[11px] font-medium bg-[#141414] hover:bg-[#1c1c1c] text-text-primary border border-[#262626] hover:border-[#383838] transition-all"
+                  >
+                    <span>Launch Visualizer</span>
+                    <span class="text-accent-emerald">▶</span>
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,57 @@
+---
+import Navbar from '../components/layout/Navbar.astro';
+import Footer from '../components/layout/Footer.astro';
+import { getUrl } from '../utils/url';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'LeetCode 150 Revision | Algorithmic Patterns & Step-by-Step Visualizer',
+  description = 'Interactive revision platform for LeetCode Top Interview 150 problems organized by algorithmic patterns with interactive step-by-step visual solutions.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={getUrl("/favicon.svg")} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO / Metadata -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body class="min-h-screen bg-black text-[#ededed] flex flex-col font-sans antialiased selection:bg-[#333333] selection:text-white">
+    <!-- Ambient Radial Glow -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] pointer-events-none vercel-glow z-0"></div>
+
+    <!-- Header Navigation -->
+    <Navbar />
+
+    <!-- Content Area -->
+    <main class="flex-1 w-full relative z-10">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+  </body>
+</html>

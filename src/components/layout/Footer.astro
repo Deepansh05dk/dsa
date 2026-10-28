@@ -1,0 +1,82 @@
+---
+import { getUrl } from '../../utils/url';
+const year = new Date().getFullYear();
+---
+
+<footer class="w-full border-t border-[#262626] bg-black text-text-muted mt-auto transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <!-- Col 1: Brand & Mission -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded flex items-center justify-center bg-white text-black">
+            <svg viewBox="0 0 75 65" height="10" width="12" fill="currentColor">
+              <path d="M37.5 0L75 65H0z"></path>
+            </svg>
+          </div>
+          <span class="font-sans font-semibold text-sm text-[#ededed]">LeetCode 150 Revision</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Interactive algorithmic revision platform for the top 150 interview problems, organized by patterns with step-by-step state visualizations.
+        </p>
+      </div>
+
+      <!-- Col 2: Algorithmic Patterns -->
+      <div>
+        <h4 class="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary mb-3">Core Patterns</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href={getUrl("/patterns/two-pointers")} class="hover:text-text-primary transition-colors">Two Pointers</a></li>
+          <li><a href={getUrl("/patterns/sliding-window")} class="hover:text-text-primary transition-colors">Sliding Window</a></li>
+          <li><a href={getUrl("/patterns/binary-search")} class="hover:text-text-primary transition-colors">Binary Search</a></li>
+          <li><a href={getUrl("/patterns/1d-dp")} class="hover:text-text-primary transition-colors">Dynamic Programming</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Advanced Patterns -->
+      <div>
+        <h4 class="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary mb-3">Structures</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href={getUrl("/patterns/linked-list")} class="hover:text-text-primary transition-colors">Linked List</a></li>
+          <li><a href={getUrl("/patterns/binary-tree-general")} class="hover:text-text-primary transition-colors">Binary Tree</a></li>
+          <li><a href={getUrl("/patterns/graph-general")} class="hover:text-text-primary transition-colors">Graph & BFS/DFS</a></li>
+          <li><a href={getUrl("/patterns/trie")} class="hover:text-text-primary transition-colors">Trie & Backtracking</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Platform Metrics -->
+      <div>
+        <h4 class="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary mb-3">Platform Specs</h4>
+        <div class="space-y-2 text-xs font-mono text-text-dim">
+          <div class="flex items-center justify-between">
+            <span>Problems:</span>
+            <span class="text-text-primary">150 Curated</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Patterns:</span>
+            <span class="text-text-primary">23 Categories</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Visualizer:</span>
+            <span class="text-accent-emerald">Step-by-Step State</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Aesthetics:</span>
+            <span class="text-text-primary">Vercel Dark Theme</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="pt-8 border-t border-[#1f1f1f] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-dim">
+      <div class="flex items-center gap-2">
+        <span>Designed for technical interview mastery.</span>
+        <span>•</span>
+        <span>Astro 5 SSG & React Islands</span>
+      </div>
+      <div>
+        <span>&copy; {year} LeetCode 150 Revision. All rights reserved.</span>
+      </div>
+    </div>
+  </div>
+</footer>
