@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Download, Smartphone, X } from 'lucide-react';
+import { Download, Smartphone, X, WifiOff, CheckCircle2 } from 'lucide-react';
 
 export default function InstallPwa() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
+  const [offlineReady, setOfflineReady] = useState(false);
 
   useEffect(() => {
+    // Check network status
+    setIsOnline(navigator.onLine);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
     // Strictly verify if the current window is running inside the standalone PWA container
     const checkStandalone = () => {
       const standalone =
@@ -18,7 +27,6 @@ export default function InstallPwa() {
 
     checkStandalone();
 
-    // Listen to media query changes (e.g. if opened in PWA mode)
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
     const handleMediaChange = (e: MediaQueryListEvent) => {
       setIsStandalone(e.matches);
@@ -26,13 +34,26 @@ export default function InstallPwa() {
     try {
       mediaQuery.addEventListener('change', handleMediaChange);
     } catch {
-      // Safari legacy support
       mediaQuery.addListener(handleMediaChange);
     }
 
     // Check banner dismissal from sessionStorage
     const dismissed = sessionStorage.getItem('lc150_pwa_banner_dismissed') === 'true';
     setBannerDismissed(dismissed);
+
+    // Listen for service worker messages (offline caching complete)
+    const handleSwMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'ALL_PAGES_CACHED') {
+        setOfflineReady(true);
+        console.log('[PWA] Verified all 150 problems cached for offline study');
+      }
+    };
+    navigator.serviceWorker?.addEventListener('message', handleSwMessage);
+
+    // Ask service worker to ensure all pages are cached
+    if (navigator.serviceWorker?.controller) {
+      navigator.serviceWorker.controller.postMessage('FORCE_CACHE_ALL');
+    }
 
     // Listen for beforeinstallprompt event (Chrome on Android / Desktop)
     const handleBeforeInstall = (e: Event) => {
@@ -52,8 +73,11 @@ export default function InstallPwa() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      navigator.serviceWorker?.removeEventListener('message', handleSwMessage);
       try {
         mediaQuery.removeEventListener('change', handleMediaChange);
       } catch {
@@ -77,7 +101,6 @@ export default function InstallPwa() {
         setShowInstructions(true);
       }
     } else {
-      // If native deferred prompt isn't directly invocable, show visual step-by-step guide
       setShowInstructions(true);
     }
   };
@@ -87,27 +110,42 @@ export default function InstallPwa() {
     sessionStorage.setItem('lc150_pwa_banner_dismissed', 'true');
   };
 
-  // If already inside the installed standalone PWA app window, hide the install prompts
-  if (isStandalone) {
-    return null;
-  }
-
   return (
     <>
-      {/* Navbar Install Trigger Button - Always clickable in browser */}
-      <button
-        type="button"
-        onClick={handleInstallClick}
-        aria-label="Install App on Android Chrome"
-        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-sans font-medium bg-[#141414] hover:bg-[#1f1f1f] text-text-primary hover:text-white border border-[#262626] hover:border-[#404040] transition-all shadow-sm active:scale-95"
-      >
-        <Smartphone className="w-3.5 h-3.5 text-accent-cyan" />
-        <span className="hidden sm:inline">Install App</span>
-        <span className="sm:hidden">Install</span>
-      </button>
+      <div className="flex items-center gap-2">
+        {/* Offline Badge when disconnected */}
+        {!isOnline && (
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono text-[#fbbf24] bg-[#2a1b04] border border-[#d97706]/30">
+            <WifiOff className="w-3.5 h-3.5" />
+            <span>Offline Mode</span>
+          </div>
+        )}
+
+        {/* Offline Ready Badge when fully cached */}
+        {isOnline && offlineReady && (
+          <div className="hidden lg:inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-mono text-accent-emerald bg-[#062817] border border-[#059669]/30">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>150 Problems Offline Ready</span>
+          </div>
+        )}
+
+        {/* Navbar Install Trigger Button - Visible whenever in browser */}
+        {!isStandalone && (
+          <button
+            type="button"
+            onClick={handleInstallClick}
+            aria-label="Install App on Android Chrome"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-sans font-medium bg-[#141414] hover:bg-[#1f1f1f] text-text-primary hover:text-white border border-[#262626] hover:border-[#404040] transition-all shadow-sm active:scale-95"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-accent-cyan" />
+            <span className="hidden sm:inline">Install App</span>
+            <span className="sm:hidden">Install</span>
+          </button>
+        )}
+      </div>
 
       {/* Mobile Floating Bottom Banner (Shown in mobile Chrome when not dismissed) */}
-      {!bannerDismissed && (
+      {!isStandalone && !bannerDismissed && (
         <aside
           aria-label="PWA install banner"
           className="fixed bottom-4 left-4 right-4 z-50 md:hidden bg-[#0d0d0d]/95 backdrop-blur-md border border-[#2a2a2a] p-3.5 rounded-xl shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-3 duration-300"
@@ -120,7 +158,7 @@ export default function InstallPwa() {
             </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-white truncate">Install LeetCode 150</p>
-              <p className="text-[11px] text-text-muted truncate">Fast offline access & full-screen practice</p>
+              <p className="text-[11px] text-text-muted truncate">Full offline access to all 150 problems & visualizers</p>
             </div>
           </div>
 
@@ -165,7 +203,7 @@ export default function InstallPwa() {
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-white">Install on Android Chrome</h3>
-                  <p className="text-xs text-text-muted">Add LeetCode 150 to your home screen</p>
+                  <p className="text-xs text-text-muted">Save all 150 problems & visualizers offline</p>
                 </div>
               </div>
               <button
@@ -208,7 +246,7 @@ export default function InstallPwa() {
             </div>
 
             <div className="pt-2 flex items-center justify-between border-t border-[#1a1a1a]">
-              <span className="text-[11px] font-mono text-text-dim">Works offline with standalone UI</span>
+              <span className="text-[11px] font-mono text-text-dim">✓ 100% Offline Compatible</span>
               <button
                 type="button"
                 onClick={() => setShowInstructions(false)}

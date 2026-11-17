@@ -51,9 +51,10 @@ const {
     <!-- Service Worker Registration for PWA Offline & Installability -->
     <script is:inline define:vars={{ swUrl: getUrl('/sw.js'), swScope: getUrl('/') }}>
       if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-        // Clear any old buggy v1 cache immediately
+        // Clear any old buggy caches immediately
         if ('caches' in window) {
           caches.delete('lc150-pwa-v1').catch(() => {});
+          caches.delete('lc150-pwa-v2').catch(() => {});
         }
         window.addEventListener('load', () => {
           navigator.serviceWorker
