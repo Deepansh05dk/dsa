@@ -1,4 +1,6 @@
 ---
+import Sidebar from '../components/layout/Sidebar';
+import MobileNav from '../components/layout/MobileNav';
 import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
 import { getUrl } from '../utils/url';
@@ -7,11 +9,15 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  patternSlug?: string;
+  problemId?: number;
 }
 
 const {
   title = 'LeetCode 150 Revision | Algorithmic Patterns & Step-by-Step Visualizer',
   description = 'Interactive revision platform for LeetCode Top Interview 150 problems organized by algorithmic patterns with interactive step-by-step visual solutions.',
+  patternSlug,
+  problemId,
 } = Astro.props;
 ---
 
@@ -70,19 +76,32 @@ const {
       }
     </script>
   </head>
-  <body class="min-h-screen bg-black text-[#ededed] flex flex-col font-sans antialiased selection:bg-[#333333] selection:text-white">
+  <body class="min-h-screen bg-[#050505] text-[#ededed] flex flex-col font-sans antialiased selection:bg-[#333333] selection:text-white">
     <!-- Ambient Radial Glow -->
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] pointer-events-none vercel-glow z-0"></div>
 
-    <!-- Header Navigation -->
-    <Navbar />
+    <div class="flex-1 flex w-full relative z-10">
+      <!-- Desktop Sidebar (Fixed docked on lg screens) -->
+      <div class="hidden lg:block w-72 shrink-0 h-screen sticky top-0 z-30">
+        <Sidebar client:load currentPatternSlug={patternSlug} currentProblemId={problemId} />
+      </div>
 
-    <!-- Content Area -->
-    <main class="flex-1 w-full relative z-10">
-      <slot />
-    </main>
+      <!-- Main Content Container -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- Mobile Navigation Header -->
+        <MobileNav client:load currentPatternSlug={patternSlug} currentProblemId={problemId} />
 
-    <!-- Footer -->
-    <Footer />
+        <!-- Desktop Top Header Navigation -->
+        <Navbar />
+
+        <!-- Page Content -->
+        <main class="flex-1 w-full">
+          <slot />
+        </main>
+
+        <!-- Footer -->
+        <Footer />
+      </div>
+    </div>
   </body>
 </html>

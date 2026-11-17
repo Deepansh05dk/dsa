@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SolutionTabs from '../../components/problem/SolutionTabs';
+import ProblemActions from '../../components/problem/ProblemActions';
 import VisualizerEngine from '../../components/visualizer/VisualizerEngine';
 import { INITIAL_PROBLEMS } from '../../data/problems';
 import type { LeetCodeProblem } from '../../types/problem';
@@ -39,16 +40,18 @@ const getDifficultyClass = (diff: string) => {
 ---
 
 <BaseLayout
-  title={`#${problem.id} ${problem.title} | LeetCode 150 Revision`}
+  title={`#${problem.id} ${problem.title} · LeetCode 150 Revision`}
   description={`Step-by-step interactive visual solution and optimal algorithmic approach for #${problem.id} ${problem.title}.`}
+  patternSlug={problem.pattern}
+  problemId={problem.id}
 >
-  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
     <!-- Top Bar: Breadcrumbs & Prev/Next Problem Switcher -->
-    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#262626]">
+    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#222222]">
       <nav class="flex items-center gap-2 text-xs font-mono text-text-muted">
-        <a href={getUrl("/")} class="hover:text-text-primary transition-colors">Dashboard</a>
+        <a href={getUrl("/")} class="hover:text-text-primary transition-colors">Overview</a>
         <span class="text-text-dim">/</span>
-        <a href={getUrl(`/patterns/${problem.pattern}`)} class="hover:text-text-primary transition-colors">{problem.category}</a>
+        <a href={getUrl(`/patterns/${problem.pattern}/`)} class="hover:text-text-primary transition-colors">{problem.category}</a>
         <span class="text-text-dim">/</span>
         <span class="text-text-primary font-medium">#{problem.id} {problem.title}</span>
       </nav>
@@ -56,110 +59,227 @@ const getDifficultyClass = (diff: string) => {
       <div class="flex items-center gap-2 font-mono text-xs">
         {prevProblem ? (
           <a
-            href={getUrl(`/problem/${prevProblem.id}`)}
-            class="flex items-center gap-1 px-2.5 py-1 rounded bg-[#111111] hover:bg-[#1a1a1a] text-text-muted hover:text-text-primary border border-[#262626] transition-colors"
+            href={getUrl(`/problem/${prevProblem.id}/`)}
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111111] hover:bg-[#1a1a1a] text-text-muted hover:text-text-primary border border-[#242424] transition-colors"
             title={`Previous: #${prevProblem.id} ${prevProblem.title}`}
           >
             <span>←</span>
             <span class="hidden sm:inline">#{prevProblem.id}</span>
           </a>
         ) : (
-          <span class="px-2.5 py-1 rounded bg-[#0d0d0d] text-text-dim border border-[#1a1a1a] cursor-not-allowed">
+          <span class="px-3 py-1.5 rounded-lg bg-[#0d0d0d] text-text-dim border border-[#1a1a1a] cursor-not-allowed">
             ← Prev
           </span>
         )}
 
         {nextProblem ? (
           <a
-            href={getUrl(`/problem/${nextProblem.id}`)}
-            class="flex items-center gap-1 px-2.5 py-1 rounded bg-[#111111] hover:bg-[#1a1a1a] text-text-muted hover:text-text-primary border border-[#262626] transition-colors"
+            href={getUrl(`/problem/${nextProblem.id}/`)}
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111111] hover:bg-[#1a1a1a] text-text-muted hover:text-text-primary border border-[#242424] transition-colors"
             title={`Next: #${nextProblem.id} ${nextProblem.title}`}
           >
             <span class="hidden sm:inline">#{nextProblem.id}</span>
             <span>→</span>
           </a>
         ) : (
-          <span class="px-2.5 py-1 rounded bg-[#0d0d0d] text-text-dim border border-[#1a1a1a] cursor-not-allowed">
+          <span class="px-3 py-1.5 rounded-lg bg-[#0d0d0d] text-text-dim border border-[#1a1a1a] cursor-not-allowed">
             Next →
           </span>
         )}
       </div>
     </div>
 
-    <!-- Problem Header Details -->
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div class="space-y-1">
-        <div class="flex items-center gap-3">
-          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
-            #{problem.id} {problem.title}
-          </h1>
-          <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono border ${getDifficultyClass(problem.difficulty)}`}>
-            {problem.difficulty}
-          </span>
+    <!-- Problem Title, Meta Badges & Actions -->
+    <header class="space-y-4">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="space-y-2">
+          <div class="flex items-center gap-3">
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-white font-sans">
+              {problem.title}
+            </h1>
+            <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono border ${getDifficultyClass(problem.difficulty)}`}>
+              {problem.difficulty}
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs text-text-muted font-sans">
+            <a href={getUrl(`/patterns/${problem.pattern}/`)} class="text-accent-cyan hover:underline font-mono">
+              {problem.category}
+            </a>
+            <span>•</span>
+            <span>LeetCode Top Interview 150</span>
+            <span>•</span>
+            <span class="font-mono text-text-dim">Optimal: <strong class="text-text-secondary">{problem.optimal.complexity.time}</strong></span>
+          </div>
         </div>
-        <div class="flex items-center gap-2 text-xs text-text-muted font-sans">
-          <span>Pattern:</span>
-          <a href={getUrl(`/patterns/${problem.pattern}`)} class="text-accent-cyan hover:underline font-mono">
-            {problem.category}
-          </a>
-          <span>•</span>
-          <span>LeetCode Top Interview 150</span>
-        </div>
+
+        {/* Mark as Solved & Bookmark Actions */}
+        <ProblemActions client:load problemId={problem.id} />
       </div>
-    </div>
+    </header>
 
-    <!-- 2-Column Responsive Workspace -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- Left Column: Problem Statement & Solution Tabs (5 cols) -->
-      <div class="lg:col-span-5 space-y-6">
-        <!-- Problem Statement Card -->
-        <div class="p-5 rounded-xl bg-[#0a0a0a] border border-[#262626] space-y-4">
-          <h2 class="text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">
-            Problem Statement
-          </h2>
-          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans">
-            {problem.statement}
-          </p>
+    <!-- SECTION 1: The Challenge (Problem Statement) -->
+    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-5 shadow-lg">
+      <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">
+        <span class="w-2 h-2 rounded-full bg-accent-cyan" />
+        <span>The Challenge</span>
+      </div>
 
-          <!-- Examples -->
-          {problem.examples.length > 0 && (
-            <div class="space-y-2 pt-2 border-t border-[#1a1a1a]">
-              <span class="text-[11px] font-mono text-text-dim uppercase tracking-wider">Example:</span>
-              <div class="p-3 rounded-lg bg-[#050505] border border-[#1f1f1f] text-xs font-mono space-y-1">
-                <div><span class="text-text-dim">Input:</span> <span class="text-text-primary">{problem.examples[0].input}</span></div>
-                <div><span class="text-text-dim">Output:</span> <span class="text-accent-emerald">{problem.examples[0].output}</span></div>
-                {problem.examples[0].explanation && (
-                  <div class="text-[11px] text-text-muted pt-1"><span class="text-text-dim">Explanation:</span> {problem.examples[0].explanation}</div>
-                )}
+      <p class="text-sm sm:text-base text-text-secondary leading-relaxed font-sans">
+        {problem.statement}
+      </p>
+
+      {/* Example Box */}
+      {problem.examples.length > 0 && (
+        <div class="space-y-2 pt-3 border-t border-[#181818]">
+          <span class="text-xs font-mono text-text-dim uppercase tracking-wider">Example Walkthrough:</span>
+          <div class="p-4 rounded-xl bg-[#060606] border border-[#1a1a1a] text-xs font-mono space-y-1.5">
+            <div><span class="text-text-dim">Input:</span> <span class="text-text-primary font-semibold">{problem.examples[0].input}</span></div>
+            <div><span class="text-text-dim">Output:</span> <span class="text-accent-emerald font-semibold">{problem.examples[0].output}</span></div>
+            {problem.examples[0].explanation && (
+              <div class="text-[11px] text-text-muted pt-1 border-t border-[#141414]">
+                <span class="text-text-dim">Note:</span> {problem.examples[0].explanation}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+      )}
 
-          <!-- Constraints -->
-          {problem.constraints.length > 0 && (
-            <div class="space-y-1.5 pt-2 border-t border-[#1a1a1a]">
-              <span class="text-[11px] font-mono text-text-dim uppercase tracking-wider">Constraints:</span>
-              <ul class="list-disc list-inside text-xs font-mono text-text-muted space-y-0.5">
-                {problem.constraints.map((c) => (
-                  <li>{c}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {/* Constraints */}
+      {problem.constraints.length > 0 && (
+        <div class="space-y-2 pt-2 border-t border-[#181818]">
+          <span class="text-xs font-mono text-text-dim uppercase tracking-wider">Constraints & Bounds:</span>
+          <div class="flex flex-wrap gap-2">
+            {problem.constraints.map((c) => (
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-[#111111] border border-[#202020] text-text-secondary">
+                {c}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+
+    <!-- SECTION 2: See exact execution, step by step (The Interactive Visualizer) -->
+    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-5 shadow-2xl">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1c1c1c]">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-accent-cyan">
+            <span class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
+            <span>See exact execution, step by step</span>
+          </div>
+          <p class="text-xs text-text-muted mt-1 font-sans">
+            Inspect the comparison, invariant, pointer movements, and state transitions.
+          </p>
+        </div>
+        <div class="text-[11px] font-mono text-text-dim">
+          Default input: <span class="text-text-secondary font-semibold">{problem.defaultInputDescription}</span>
+        </div>
+      </div>
+
+      <VisualizerEngine client:load problem={problem} />
+    </section>
+
+    <!-- SECTION 3: Put it into code (Solution Tabs) -->
+    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-5 shadow-lg">
+      <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">
+        <span class="w-2 h-2 rounded-full bg-accent-emerald" />
+        <span>Put it into code</span>
+      </div>
+
+      <SolutionTabs client:load optimal={problem.optimal} bruteForce={problem.bruteForce} />
+    </section>
+
+    <!-- SECTION 4: The pattern to remember (Numbered 01, 02, 03 cards) -->
+    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-5 shadow-lg">
+      <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-accent-amber">
+        <span class="w-2 h-2 rounded-full bg-accent-amber" />
+        <span>The pattern to remember</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Card 01 -->
+        <div class="p-4 rounded-xl bg-[#070707] border border-[#1f1f1f] space-y-2">
+          <div class="font-mono text-xs text-accent-cyan font-bold">01 Inspect Invariant</div>
+          <h4 class="text-xs font-semibold text-white">Recognize the Trigger</h4>
+          <p class="text-xs text-text-secondary leading-relaxed font-sans">
+            {problem.optimal.patternInvariant}
+          </p>
         </div>
 
-        <!-- Optimal vs Brute Force Solution Tabs Island -->
-        <SolutionTabs
-          client:load
-          optimal={problem.optimal}
-          bruteForce={problem.bruteForce}
-        />
+        <!-- Card 02 -->
+        <div class="p-4 rounded-xl bg-[#070707] border border-[#1f1f1f] space-y-2">
+          <div class="font-mono text-xs text-accent-emerald font-bold">02 Advance State</div>
+          <h4 class="text-xs font-semibold text-white">Eliminate Invalid Space</h4>
+          <p class="text-xs text-text-secondary leading-relaxed font-sans">
+            {problem.optimal.explanation.slice(0, 180)}...
+          </p>
+        </div>
+
+        <!-- Card 03 -->
+        <div class="p-4 rounded-xl bg-[#070707] border border-[#1f1f1f] space-y-2">
+          <div class="font-mono text-xs text-accent-purple font-bold">03 Why Optimal Wins</div>
+          <h4 class="text-xs font-semibold text-white">Beat Brute Force</h4>
+          <p class="text-xs text-text-secondary leading-relaxed font-sans">
+            {problem.optimal.whyOptimalIsPreferred.slice(0, 180)}...
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Time & Space Complexity -->
+    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-4 shadow-lg">
+      <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">
+        <span class="w-2 h-2 rounded-full bg-accent-purple" />
+        <span>Time & Space Complexity</span>
       </div>
 
-      <!-- Right Column: Algorithm Visualizer Island Container (7 cols) -->
-      <div class="lg:col-span-7 space-y-4">
-        <VisualizerEngine client:load problem={problem} />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+        <div class="p-4 rounded-xl bg-[#070707] border border-[#1f1f1f] space-y-1.5">
+          <span class="text-text-dim">Time Complexity:</span>
+          <div class="text-xl font-bold text-accent-cyan">{problem.optimal.complexity.time}</div>
+          <p class="text-[11px] text-text-muted font-sans leading-relaxed">
+            Optimal approach replaces {problem.bruteForce.complexity.time} brute force by maintaining state invariants.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#070707] border border-[#1f1f1f] space-y-1.5">
+          <span class="text-text-dim">Auxiliary Space:</span>
+          <div class="text-xl font-bold text-accent-purple">{problem.optimal.complexity.space}</div>
+          <p class="text-[11px] text-text-muted font-sans leading-relaxed">
+            Memory footprint allocated during traversal, excluding returned output structure.
+          </p>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- SECTION 6: Before you mark it solved (Edge Cases) -->
+    <section class="p-5 rounded-2xl bg-[#080d0a] border border-[#0d3b1f] space-y-2 text-xs">
+      <div class="flex items-center gap-2 font-mono font-semibold text-[#34d399] uppercase tracking-wider">
+        <span>Before you mark it solved</span>
+      </div>
+      <p class="text-text-secondary leading-relaxed font-sans">
+        Double check edge cases: empty input, single element, duplicates, negative numbers, and boundary limits. Verify whether your pointers terminate safely without out-of-bounds index exceptions.
+      </p>
+    </section>
+
+    <!-- SECTION 7: Next Problem in Pattern Footer -->
+    {nextProblem && (
+      <nav class="pt-6 border-t border-[#222222] flex items-center justify-between">
+        <div class="text-xs text-text-dim font-mono">Next problem in catalog:</div>
+        <a
+          href={getUrl(`/problem/${nextProblem.id}/`)}
+          class="group flex items-center gap-3 p-4 rounded-xl bg-[#0c0c0c] border border-[#242424] hover:border-[#404040] hover:bg-[#121212] transition-all"
+        >
+          <div class="text-right">
+            <span class="text-[10px] font-mono text-text-dim block">Up next</span>
+            <span class="text-xs font-semibold text-white group-hover:text-accent-cyan transition-colors">
+              #{nextProblem.id} {nextProblem.title}
+            </span>
+          </div>
+          <span class="text-accent-emerald group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+      </nav>
+    )}
   </div>
 </BaseLayout>

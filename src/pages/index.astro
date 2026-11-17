@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PatternCard from '../components/dashboard/PatternCard.astro';
+import ProblemSheetTable from '../components/dashboard/ProblemSheetTable';
 import GlobalSearch from '../components/ui/GlobalSearch';
 import { PATTERNS } from '../data/patterns';
 import { INITIAL_PROBLEMS } from '../data/problems';
@@ -133,69 +134,20 @@ const getDifficultyClass = (diff: string) => {
       </div>
     </section>
 
-    <!-- Quick Problem Launch Table -->
+    <!-- Problem Sheet & Interactive Visualizer Hub -->
     <section id="problems" class="space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#262626]">
         <div>
           <h2 class="text-2xl font-bold tracking-tight text-white font-sans">
-            Problem Catalog & Visualizer Hub
+            Problem Sheet (150)
           </h2>
           <p class="text-xs text-text-secondary mt-1 font-sans">
-            Launch interactive execution visualizers and study optimal vs brute-force solutions.
+            Search, filter by pattern/difficulty, track solved checkmarks, and launch interactive step-by-step visualizers.
           </p>
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-xl border border-[#262626] bg-[#0a0a0a]">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-[#0f0f0f] border-b border-[#262626] text-text-muted font-mono uppercase tracking-wider text-[11px]">
-            <tr>
-              <th scope="col" class="py-3 px-4">#</th>
-              <th scope="col" class="py-3 px-4">Problem Title</th>
-              <th scope="col" class="py-3 px-4">Pattern Category</th>
-              <th scope="col" class="py-3 px-4">Difficulty</th>
-              <th scope="col" class="py-3 px-4">Optimal Complexity</th>
-              <th scope="col" class="py-3 px-4 text-right">Interactive Visualizer</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#1a1a1a]">
-            {INITIAL_PROBLEMS.map((problem) => (
-              <tr class="hover:bg-[#121212] transition-colors group">
-                <td class="py-3 px-4 font-mono text-text-dim">#{problem.id}</td>
-                <td class="py-3 px-4 font-medium text-text-primary">
-                  <a href={getUrl(`/problem/${problem.id}`)} class="hover:underline flex items-center gap-1.5">
-                    <span>{problem.title}</span>
-                  </a>
-                </td>
-                <td class="py-3 px-4">
-                  <a href={getUrl(`/patterns/${problem.pattern}`)} class="text-text-muted hover:text-accent-cyan transition-colors">
-                    {problem.category}
-                  </a>
-                </td>
-                <td class="py-3 px-4">
-                  <span class={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono border ${getDifficultyClass(problem.difficulty)}`}>
-                    {problem.difficulty}
-                  </span>
-                </td>
-                <td class="py-3 px-4 font-mono text-text-dim">
-                  <span class="text-accent-cyan">{problem.optimal.complexity.time}</span>
-                  <span class="text-text-dim mx-1">/</span>
-                  <span class="text-accent-purple">{problem.optimal.complexity.space}</span>
-                </td>
-                <td class="py-3 px-4 text-right">
-                  <a
-                    href={getUrl(`/problem/${problem.id}`)}
-                    class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-[11px] font-medium bg-[#141414] hover:bg-[#1c1c1c] text-text-primary border border-[#262626] hover:border-[#383838] transition-all"
-                  >
-                    <span>Launch Visualizer</span>
-                    <span class="text-accent-emerald">▶</span>
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ProblemSheetTable client:load problems={INITIAL_PROBLEMS} />
     </section>
   </div>
 </BaseLayout>
