@@ -13,6 +13,17 @@ import {
   simulateClimbingStairs,
   simulateUniversalArray,
 } from '../src/utils/simulators/algorithms';
+import {
+  simulateTreePattern,
+  simulateMatrixPattern,
+  simulateLinkedListPattern,
+  simulateIntervalsPattern,
+  simulateHashMapPattern,
+} from '../src/utils/simulators/pattern-engines';
+import {
+  parseExampleInputString,
+  extractFieldsAndPresetsFromProblem,
+} from '../src/utils/simulators/param-parser';
 import { getSimulatorConfigForProblem } from '../src/utils/simulators/registry';
 import type { LeetCodeProblem } from '../src/types/problem';
 
@@ -162,32 +173,127 @@ describe('Dynamic Visualizer Simulators Suite', () => {
     });
   });
 
-  describe('13. Simulator Registry Resolution', () => {
-    it('resolves dedicated simulator for Two Sum (#1)', () => {
-      const mockProblem: Partial<LeetCodeProblem> = {
-        id: 1,
-        title: 'Two Sum',
-        pattern: 'hashmap',
-        category: 'Hashmap',
-      };
-      const config = getSimulatorConfigForProblem(mockProblem as LeetCodeProblem);
-      expect(config.problemId).toBe(1);
-      expect(config.fields).toHaveLength(2);
-      expect(config.presets.length).toBeGreaterThan(0);
+  describe('13. Pattern-Specific Simulation Engines', () => {
+    const mockProblem: LeetCodeProblem = {
+      id: 999,
+      slug: 'mock-problem',
+      title: 'Mock Problem',
+      difficulty: 'Medium',
+      pattern: 'binary-tree-general',
+      category: 'Binary Tree',
+      statement: 'Mock statement',
+      examples: [{ input: 'root = [3,9,20,null,null,15,7]', output: '3' }],
+      constraints: [],
+      bruteForce: { name: 'B', code: '', complexity: { time: 'O(N)', space: 'O(N)' }, explanation: '' },
+      optimal: { name: 'O', code: '', complexity: { time: 'O(N)', space: 'O(H)' }, explanation: '', whyOptimalIsPreferred: '', patternInvariant: '' },
+      defaultInputDescription: '',
+    };
+
+    it('simulates Tree pattern and emits treeState with nodes', () => {
+      const steps = simulateTreePattern({ root: [3, 9, 20, null, null, 15, 7] }, mockProblem);
+      expect(steps.length).toBeGreaterThan(2);
+      expect(steps[0].treeState).toBeDefined();
+      expect(steps[0].treeState?.nodes.length).toBe(5); // 3, 9, 20, 15, 7 non-null nodes
     });
 
-    it('resolves fallback configuration for generic problem', () => {
-      const mockProblem: Partial<LeetCodeProblem> = {
-        id: 9999,
-        title: 'Custom Problem',
-        pattern: 'two-pointers',
-        category: 'Two Pointers',
+    it('simulates Matrix pattern and emits matrixState', () => {
+      const matrixProb: LeetCodeProblem = { ...mockProblem, pattern: 'matrix', category: 'Matrix' };
+      const steps = simulateMatrixPattern({ matrix: [[1, 2], [3, 4]] }, matrixProb);
+      expect(steps[0].matrixState).toBeDefined();
+      expect(steps[0].matrixState?.grid).toHaveLength(2);
+    });
+
+    it('simulates Intervals pattern and merges overlapping pairs', () => {
+      const intProb: LeetCodeProblem = { ...mockProblem, pattern: 'intervals', category: 'Intervals' };
+      const steps = simulateIntervalsPattern({ intervals: [[1, 3], [2, 6], [8, 10]] }, intProb);
+      expect(steps.length).toBeGreaterThan(2);
+      const last = steps[steps.length - 1];
+      expect(last.variables?.finalCount).toBe(2);
+    });
+
+    it('simulates Linked List pattern and emits linkedListState', () => {
+      const listProb: LeetCodeProblem = { ...mockProblem, pattern: 'linked-list', category: 'Linked List' };
+      const steps = simulateLinkedListPattern({ head: [10, 20, 30] }, listProb);
+      expect(steps[0].linkedListState?.nodes).toHaveLength(3);
+    });
+
+    it('simulates Hash Map pattern and increments frequencies', () => {
+      const hashProb: LeetCodeProblem = { ...mockProblem, pattern: 'hashmap', category: 'Hashmap' };
+      const steps = simulateHashMapPattern({ s: 'banana' }, hashProb);
+      expect(steps[0].hashMapState).toBeDefined();
+      expect(steps[steps.length - 1].variables?.totalUniqueKeys).toBe(3); // b, a, n
+    });
+  });
+
+  describe('14. Universal Example Parameter Parser', () => {
+    it('parses multiple assignment variables from input string', () => {
+      const parsed = parseExampleInputString('nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3');
+      expect(parsed.nums1).toEqual([1, 2, 3, 0, 0, 0]);
+      expect(parsed.m).toBe(3);
+      expect(parsed.nums2).toEqual([2, 5, 6]);
+      expect(parsed.n).toBe(3);
+    });
+
+    it('parses string assignments accurately', () => {
+      const parsed = parseExampleInputString('s = "anagram", t = "nagaram"');
+      expect(parsed.s).toBe('anagram');
+      expect(parsed.t).toBe('nagaram');
+    });
+
+    it('parses 2D grid matrix assignments', () => {
+      const parsed = parseExampleInputString('grid = [["1","1","0"],["1","1","0"]]');
+      expect(parsed.grid).toEqual([['1', '1', '0'], ['1', '1', '0']]);
+    });
+
+    it('extracts non-Two-Sum fields for Problem 88 (Merge Sorted Array)', () => {
+      const p88: LeetCodeProblem = {
+        id: 88,
+        slug: 'merge-sorted-array',
+        title: 'Merge Sorted Array',
+        difficulty: 'Easy',
+        pattern: 'array-string',
+        category: 'Array / String',
+        statement: '',
+        examples: [
+          { input: 'nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3', output: '[1,2,2,3,5,6]' },
+        ],
+        constraints: [],
+        bruteForce: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '' },
+        optimal: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '', whyOptimalIsPreferred: '', patternInvariant: '' },
+        defaultInputDescription: '',
       };
-      const config = getSimulatorConfigForProblem(mockProblem as LeetCodeProblem);
-      expect(config.problemId).toBe(9999);
-      expect(config.fields[0].key).toBe('nums');
-      const steps = config.simulate({ nums: [1, 2, 3] }, mockProblem as LeetCodeProblem);
-      expect(steps.length).toBeGreaterThan(1);
+
+      const config = getSimulatorConfigForProblem(p88);
+      const fieldKeys = config.fields.map((f) => f.key);
+      expect(fieldKeys).toContain('nums1');
+      expect(fieldKeys).toContain('nums2');
+      expect(fieldKeys).not.toContain('target'); // NO Two Sum target!
+      expect(config.presets[0].values.m).toBe(3);
+    });
+
+    it('extracts non-Two-Sum fields for Problem 242 (Valid Anagram)', () => {
+      const p242: LeetCodeProblem = {
+        id: 242,
+        slug: 'valid-anagram',
+        title: 'Valid Anagram',
+        difficulty: 'Easy',
+        pattern: 'hashmap',
+        category: 'Hashmap',
+        statement: '',
+        examples: [
+          { input: 's = "anagram", t = "nagaram"', output: 'true' },
+        ],
+        constraints: [],
+        bruteForce: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '' },
+        optimal: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '', whyOptimalIsPreferred: '', patternInvariant: '' },
+        defaultInputDescription: '',
+      };
+
+      const config = getSimulatorConfigForProblem(p242);
+      const fieldKeys = config.fields.map((f) => f.key);
+      expect(fieldKeys).toEqual(['s', 't']);
+      expect(config.presets[0].values.s).toBe('anagram');
+      expect(config.presets[0].values.t).toBe('nagaram');
     });
   });
 });

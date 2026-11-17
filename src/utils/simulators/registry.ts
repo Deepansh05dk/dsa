@@ -19,6 +19,14 @@ import {
   simulateClimbingStairs,
   simulateUniversalArray,
 } from './algorithms';
+import { extractFieldsAndPresetsFromProblem } from './param-parser';
+import {
+  simulateTreePattern,
+  simulateMatrixPattern,
+  simulateLinkedListPattern,
+  simulateIntervalsPattern,
+  simulateHashMapPattern,
+} from './pattern-engines';
 
 /**
  * Registry of interactive input schemas and executable simulators.
@@ -31,15 +39,15 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 'nums',
-        label: 'Array of Numbers (nums)',
+        label: 'nums (Array)',
         type: 'array',
         placeholder: 'e.g. 2, 7, 11, 15',
         defaultValue: [2, 7, 11, 15],
-        helpText: 'Comma or space separated integers (max 15)',
+        helpText: 'Comma or space separated integers',
       },
       {
         key: 'target',
-        label: 'Target Sum (target)',
+        label: 'target (Target Sum)',
         type: 'number',
         placeholder: 'e.g. 9',
         defaultValue: 9,
@@ -67,7 +75,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 's',
-        label: 'Input String (s)',
+        label: 's (Input String)',
         type: 'string',
         placeholder: 'e.g. A man, a plan, a canal: Panama',
         defaultValue: 'A man, a plan, a canal: Panama',
@@ -93,8 +101,8 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     title: 'Container With Most Water',
     fields: [
       {
-        key: 'heights',
-        label: 'Heights Array (height)',
+        key: 'height',
+        label: 'height (Heights Array)',
         type: 'array',
         placeholder: 'e.g. 1, 8, 6, 2, 5, 4, 8, 3, 7',
         defaultValue: [1, 8, 6, 2, 5, 4, 8, 3, 7],
@@ -102,13 +110,13 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
       },
     ],
     presets: [
-      { label: 'Example 1', values: { heights: [1, 8, 6, 2, 5, 4, 8, 3, 7] } },
-      { label: 'Example 2 [1, 1]', values: { heights: [1, 1] } },
-      { label: 'Decreasing Heights', values: { heights: [9, 8, 7, 6, 5, 4, 3] } },
-      { label: 'V-Shape', values: { heights: [8, 2, 1, 1, 2, 8] } },
+      { label: 'Example 1', values: { height: [1, 8, 6, 2, 5, 4, 8, 3, 7] } },
+      { label: 'Example 2 [1, 1]', values: { height: [1, 1] } },
+      { label: 'Decreasing Heights', values: { height: [9, 8, 7, 6, 5, 4, 3] } },
+      { label: 'V-Shape', values: { height: [8, 2, 1, 1, 2, 8] } },
     ],
     simulate: (input) => {
-      const heights = parseNumberArray(input.heights, [1, 8, 6, 2, 5, 4, 8, 3, 7]);
+      const heights = parseNumberArray(input.height ?? input.heights, [1, 8, 6, 2, 5, 4, 8, 3, 7]);
       return simulateContainerWithMostWater(heights.length >= 2 ? heights : [1, 1]);
     },
   },
@@ -120,7 +128,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 'prices',
-        label: 'Stock Prices Array (prices)',
+        label: 'prices (Stock Prices)',
         type: 'array',
         placeholder: 'e.g. 7, 1, 5, 3, 6, 4',
         defaultValue: [7, 1, 5, 3, 6, 4],
@@ -146,7 +154,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 'nums',
-        label: 'Integer Array (nums)',
+        label: 'nums (Integer Array)',
         type: 'array',
         placeholder: 'e.g. -1, 0, 1, 2, -1, -4',
         defaultValue: [-1, 0, 1, 2, -1, -4],
@@ -172,7 +180,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 's',
-        label: 'Bracket String (s)',
+        label: 's (Bracket String)',
         type: 'string',
         placeholder: 'e.g. ()[]{}',
         defaultValue: '()[]{}',
@@ -199,7 +207,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 'nums',
-        label: 'Integer Array (nums)',
+        label: 'nums (Integer Array)',
         type: 'array',
         placeholder: 'e.g. -2, 1, -3, 4, -1, 2, 1, -5, 4',
         defaultValue: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
@@ -225,7 +233,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 's',
-        label: 'Input String (s)',
+        label: 's (Input String)',
         type: 'string',
         placeholder: 'e.g. abcabcbb',
         defaultValue: 'abcabcbb',
@@ -251,7 +259,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 'nums',
-        label: 'Sorted Array (nums)',
+        label: 'nums (Sorted Array)',
         type: 'array',
         placeholder: 'e.g. 1, 3, 5, 6',
         defaultValue: [1, 3, 5, 6],
@@ -259,7 +267,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
       },
       {
         key: 'target',
-        label: 'Target Value (target)',
+        label: 'target (Target Value)',
         type: 'number',
         placeholder: 'e.g. 5',
         defaultValue: 5,
@@ -286,7 +294,7 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     fields: [
       {
         key: 'n',
-        label: 'Number of Stairs (n)',
+        label: 'n (Number of Stairs)',
         type: 'number',
         placeholder: 'e.g. 5',
         defaultValue: 5,
@@ -311,8 +319,8 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
     title: 'Reverse Linked List',
     fields: [
       {
-        key: 'values',
-        label: 'Node Values (comma-separated)',
+        key: 'head',
+        label: 'head (Linked List Nodes)',
         type: 'array',
         placeholder: 'e.g. 1, 2, 3, 4, 5',
         defaultValue: [1, 2, 3, 4, 5],
@@ -320,202 +328,209 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
       },
     ],
     presets: [
-      { label: 'Example 1 [1, 2, 3, 4, 5]', values: { values: [1, 2, 3, 4, 5] } },
-      { label: 'Example 2 [1, 2]', values: { values: [1, 2] } },
-      { label: 'Single Node [42]', values: { values: [42] } },
+      { label: 'Example 1 [1, 2, 3, 4, 5]', values: { head: [1, 2, 3, 4, 5] } },
+      { label: 'Example 2 [1, 2]', values: { head: [1, 2] } },
+      { label: 'Single Node [42]', values: { head: [42] } },
     ],
     simulate: (input) => {
-      const vals = parseNumberArray(input.values, [1, 2, 3, 4, 5], 10);
+      const vals = parseNumberArray(input.head ?? input.values, [1, 2, 3, 4, 5], 10);
       return simulateReverseLinkedList(vals);
     },
+  },
+
+  // 56. Merge Intervals
+  56: {
+    problemId: 56,
+    title: 'Merge Intervals',
+    fields: [
+      {
+        key: 'intervals',
+        label: 'intervals (2D Array)',
+        type: 'array',
+        placeholder: 'e.g. [[1,3],[2,6],[8,10],[15,18]]',
+        defaultValue: [[1, 3], [2, 6], [8, 10], [15, 18]],
+        helpText: 'List of start-end interval pairs',
+      },
+    ],
+    presets: [
+      { label: 'Example 1', values: { intervals: [[1, 3], [2, 6], [8, 10], [15, 18]] } },
+      { label: 'Example 2 [[1,4],[4,5]]', values: { intervals: [[1, 4], [4, 5]] } },
+      { label: 'Nested [[1,4],[2,3]]', values: { intervals: [[1, 4], [2, 3]] } },
+    ],
+    simulate: (input, prob) => simulateIntervalsPattern(input, prob),
+  },
+
+  // 200. Number of Islands
+  200: {
+    problemId: 200,
+    title: 'Number of Islands',
+    fields: [
+      {
+        key: 'grid',
+        label: 'grid (2D Binary Matrix)',
+        type: 'array',
+        placeholder: 'e.g. [["1","1","0"],["1","1","0"],["0","0","1"]]',
+        defaultValue: [
+          ['1', '1', '0'],
+          ['1', '1', '0'],
+          ['0', '0', '1'],
+        ],
+        helpText: '2D binary grid ("1" for land, "0" for water)',
+      },
+    ],
+    presets: [
+      {
+        label: 'Example 1 (1 Big Island)',
+        values: {
+          grid: [
+            ['1', '1', '1', '0'],
+            ['1', '1', '0', '0'],
+            ['1', '1', '0', '0'],
+          ],
+        },
+      },
+      {
+        label: 'Example 2 (3 Islands)',
+        values: {
+          grid: [
+            ['1', '1', '0', '0'],
+            ['1', '1', '0', '0'],
+            ['0', '0', '1', '0'],
+            ['0', '0', '0', '1'],
+          ],
+        },
+      },
+    ],
+    simulate: (input, prob) => simulateMatrixPattern(input, prob),
+  },
+
+  // 54. Spiral Matrix
+  54: {
+    problemId: 54,
+    title: 'Spiral Matrix',
+    fields: [
+      {
+        key: 'matrix',
+        label: 'matrix (2D Grid)',
+        type: 'array',
+        placeholder: 'e.g. [[1,2,3],[4,5,6],[7,8,9]]',
+        defaultValue: [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ],
+        helpText: 'm x n matrix of integers',
+      },
+    ],
+    presets: [
+      {
+        label: 'Example 1 (3x3)',
+        values: {
+          matrix: [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+          ],
+        },
+      },
+      {
+        label: 'Example 2 (3x4)',
+        values: {
+          matrix: [
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+            [9, 10, 11, 12],
+          ],
+        },
+      },
+    ],
+    simulate: (input, prob) => simulateMatrixPattern(input, prob),
+  },
+
+  // 104. Maximum Depth of Binary Tree
+  104: {
+    problemId: 104,
+    title: 'Maximum Depth of Binary Tree',
+    fields: [
+      {
+        key: 'root',
+        label: 'root (Binary Tree Nodes)',
+        type: 'array',
+        placeholder: 'e.g. 3, 9, 20, null, null, 15, 7',
+        defaultValue: [3, 9, 20, null, null, 15, 7],
+        helpText: 'Level-order node values',
+      },
+    ],
+    presets: [
+      { label: 'Example 1 [3,9,20,...]', values: { root: [3, 9, 20, null, null, 15, 7] } },
+      { label: 'Example 2 [1,null,2]', values: { root: [1, null, 2] } },
+    ],
+    simulate: (input, prob) => simulateTreePattern(input, prob),
   },
 };
 
 /**
- * Resolves or synthesizes an interactive input configuration for ANY LeetCode problem.
+ * Universal input configuration resolver for ALL 150 LeetCode problems.
+ * Automatically extracts real variable names, types, and presets from problem.examples,
+ * and routes to the appropriate pattern execution interpreter.
  */
 export function getSimulatorConfigForProblem(problem: LeetCodeProblem): ProblemInputConfig {
-  // 1. Direct problem-specific simulator
+  // 1. Dedicated flagship simulator if available
   if (PROBLEM_SIMULATORS[problem.id]) {
     return PROBLEM_SIMULATORS[problem.id];
   }
 
-  const p = (problem.pattern || '').toLowerCase();
-  const cat = (problem.category || '').toLowerCase();
+  // 2. Automatically extract authentic parameter definitions and presets from problem.examples
+  const { fields, presets } = extractFieldsAndPresetsFromProblem(problem);
 
-  // 2. Binary Search family
-  if (p.includes('binary-search') || cat.includes('binary search')) {
-    return {
-      problemId: problem.id,
-      title: problem.title,
-      fields: [
-        {
-          key: 'nums',
-          label: 'Sorted Array (nums)',
-          type: 'array',
-          placeholder: 'e.g. 1, 3, 5, 7, 9, 11',
-          defaultValue: [1, 3, 5, 7, 9, 11],
-          helpText: 'Comma-separated sorted numbers',
-        },
-        {
-          key: 'target',
-          label: 'Search Target',
-          type: 'number',
-          placeholder: 'e.g. 7',
-          defaultValue: 7,
-          helpText: 'Value to search for',
-        },
-      ],
-      presets: [
-        { label: 'Present [7]', values: { nums: [1, 3, 5, 7, 9, 11], target: 7 } },
-        { label: 'Left Boundary [1]', values: { nums: [1, 3, 5, 7, 9, 11], target: 1 } },
-        { label: 'Right Boundary [11]', values: { nums: [1, 3, 5, 7, 9, 11], target: 11 } },
-        { label: 'Missing [4]', values: { nums: [1, 3, 5, 7, 9, 11], target: 4 } },
-      ],
-      simulate: (input) => {
-        const nums = parseNumberArray(input.nums, [1, 3, 5, 7, 9, 11]);
-        const target = parseSingleNumber(input.target, 7);
-        return simulateBinarySearch(nums, target);
-      },
+  const pattern = (problem.pattern || '').toLowerCase();
+  const category = (problem.category || '').toLowerCase();
+
+  // 3. Pattern execution dispatcher
+  let simulatorFn: (input: Record<string, any>, p: LeetCodeProblem) => any;
+
+  if (pattern.includes('tree') || category.includes('tree')) {
+    simulatorFn = (input, p) => simulateTreePattern(input, p);
+  } else if (pattern.includes('matrix') || category.includes('matrix') || pattern.includes('graph') || category.includes('graph')) {
+    simulatorFn = (input, p) => simulateMatrixPattern(input, p);
+  } else if (pattern.includes('linked-list') || category.includes('linked list')) {
+    simulatorFn = (input, p) => simulateLinkedListPattern(input, p);
+  } else if (pattern.includes('intervals') || category.includes('intervals')) {
+    simulatorFn = (input, p) => simulateIntervalsPattern(input, p);
+  } else if (pattern.includes('hashmap') || category.includes('hashmap')) {
+    simulatorFn = (input, p) => simulateHashMapPattern(input, p);
+  } else if (pattern.includes('stack') || category.includes('stack')) {
+    simulatorFn = (input) => simulateValidParentheses(input.s ?? input.input ?? '()[]{}');
+  } else if (pattern.includes('sliding-window') || category.includes('sliding window')) {
+    simulatorFn = (input) => simulateSlidingWindowSubstr(input.s ?? input.input ?? 'abcabcbb');
+  } else if (pattern.includes('binary-search') || category.includes('binary search')) {
+    simulatorFn = (input) => {
+      const nums = parseNumberArray(input.nums ?? input.input, [1, 3, 5, 7, 9, 11]);
+      const target = parseSingleNumber(input.target, 7);
+      return simulateBinarySearch(nums, target);
+    };
+  } else if (pattern.includes('1d-dp') || category.includes('1d dp')) {
+    simulatorFn = (input) => {
+      const n = parseSingleNumber(input.n ?? input.amount ?? input.input, 5);
+      return simulateClimbingStairs(n);
+    };
+  } else {
+    // Universal Array / Two-Pointers fallback
+    simulatorFn = (input) => {
+      const nums = parseNumberArray(
+        input.nums ?? input.nums1 ?? input.prices ?? input.heights ?? input.input,
+        [2, 7, 11, 15]
+      );
+      const target = parseSingleNumber(input.target ?? input.val ?? input.k, 0);
+      return simulateUniversalArray(nums, target);
     };
   }
 
-  // 3. Stack family
-  if (p.includes('stack') || cat.includes('stack')) {
-    return {
-      problemId: problem.id,
-      title: problem.title,
-      fields: [
-        {
-          key: 's',
-          label: 'Stack Expression / Sequence',
-          type: 'string',
-          placeholder: 'e.g. ()[]{}',
-          defaultValue: '()[]{}',
-          helpText: 'Tokens or bracket string',
-        },
-      ],
-      presets: [
-        { label: 'Valid Parentheses', values: { s: '()[]{}' } },
-        { label: 'Nested Brackets', values: { s: '{[()]}' } },
-        { label: 'Mismatched', values: { s: '(]' } },
-      ],
-      simulate: (input) => {
-        const s = parseStringInput(input.s, '()[]{}');
-        return simulateValidParentheses(s);
-      },
-    };
-  }
-
-  // 4. Linked List family
-  if (p.includes('linked-list') || cat.includes('linked list')) {
-    return {
-      problemId: problem.id,
-      title: problem.title,
-      fields: [
-        {
-          key: 'values',
-          label: 'Node Values',
-          type: 'array',
-          placeholder: 'e.g. 1, 2, 3, 4, 5',
-          defaultValue: [1, 2, 3, 4, 5],
-          helpText: 'Comma-separated node values (max 10)',
-        },
-      ],
-      presets: [
-        { label: 'Sequential [1..5]', values: { values: [1, 2, 3, 4, 5] } },
-        { label: 'Short [1, 2]', values: { values: [1, 2] } },
-      ],
-      simulate: (input) => {
-        const vals = parseNumberArray(input.values, [1, 2, 3, 4, 5], 10);
-        return simulateReverseLinkedList(vals);
-      },
-    };
-  }
-
-  // 5. 1D DP family
-  if (p.includes('1d-dp') || cat.includes('1d dp')) {
-    return {
-      problemId: problem.id,
-      title: problem.title,
-      fields: [
-        {
-          key: 'n',
-          label: 'Step Count / Size (n)',
-          type: 'number',
-          placeholder: 'e.g. 6',
-          defaultValue: 6,
-          helpText: 'Integer from 1 to 15',
-        },
-      ],
-      presets: [
-        { label: 'Small (n = 4)', values: { n: 4 } },
-        { label: 'Medium (n = 7)', values: { n: 7 } },
-      ],
-      simulate: (input) => {
-        const n = parseSingleNumber(input.n, 6);
-        return simulateClimbingStairs(n);
-      },
-    };
-  }
-
-  // 6. Sliding Window family
-  if (p.includes('sliding-window') || cat.includes('sliding window')) {
-    return {
-      problemId: problem.id,
-      title: problem.title,
-      fields: [
-        {
-          key: 's',
-          label: 'Window Stream / String',
-          type: 'string',
-          placeholder: 'e.g. abcabcbb',
-          defaultValue: 'abcabcbb',
-          helpText: 'String to sweep with window',
-        },
-      ],
-      presets: [
-        { label: 'Sample (abcabcbb)', values: { s: 'abcabcbb' } },
-        { label: 'Unique (abcdef)', values: { s: 'abcdef' } },
-      ],
-      simulate: (input) => {
-        const s = parseStringInput(input.s, 'abcabcbb');
-        return simulateSlidingWindowSubstr(s);
-      },
-    };
-  }
-
-  // 7. Universal Array / Two-Pointers fallback for all remaining problems
   return {
     problemId: problem.id,
     title: problem.title,
-    fields: [
-      {
-        key: 'nums',
-        label: 'Array Elements',
-        type: 'array',
-        placeholder: 'e.g. 3, 8, 12, 17, 24',
-        defaultValue: [3, 8, 12, 17, 24],
-        helpText: 'Comma or space separated numbers (max 15)',
-      },
-      {
-        key: 'target',
-        label: 'Condition / Target Value',
-        type: 'number',
-        placeholder: 'e.g. 17',
-        defaultValue: 17,
-        helpText: 'Search or comparison target',
-      },
-    ],
-    presets: [
-      { label: 'Default Array', values: { nums: [3, 8, 12, 17, 24], target: 17 } },
-      { label: 'Small Array', values: { nums: [5, 10, 15], target: 10 } },
-      { label: 'Negative Numbers', values: { nums: [-8, -2, 4, 9, 13], target: 4 } },
-    ],
-    simulate: (input) => {
-      const nums = parseNumberArray(input.nums, [3, 8, 12, 17, 24]);
-      const target = parseSingleNumber(input.target, 17);
-      return simulateUniversalArray(nums, target);
-    },
+    fields,
+    presets,
+    simulate: simulatorFn,
   };
 }

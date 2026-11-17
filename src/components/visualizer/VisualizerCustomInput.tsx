@@ -12,6 +12,20 @@ interface VisualizerCustomInputProps {
   generatedStepCount?: number;
 }
 
+function formatValueForInput(val: any): string {
+  if (val === undefined || val === null) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+  if (Array.isArray(val)) {
+    if (val.length > 0 && (Array.isArray(val[0]) || (typeof val[0] === 'object' && val[0] !== null))) {
+      return JSON.stringify(val);
+    }
+    return val.join(', ');
+  }
+  if (typeof val === 'object') return JSON.stringify(val);
+  return String(val);
+}
+
 export const VisualizerCustomInput: React.FC<VisualizerCustomInputProps> = ({
   problem,
   onSimulate,
@@ -27,7 +41,7 @@ export const VisualizerCustomInput: React.FC<VisualizerCustomInputProps> = ({
   const [inputs, setInputs] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
     config.fields.forEach((f) => {
-      initial[f.key] = Array.isArray(f.defaultValue) ? f.defaultValue.join(', ') : f.defaultValue;
+      initial[f.key] = formatValueForInput(f.defaultValue);
     });
     return initial;
   });
@@ -47,7 +61,7 @@ export const VisualizerCustomInput: React.FC<VisualizerCustomInputProps> = ({
     const newInputs: Record<string, any> = {};
     config.fields.forEach((f) => {
       const val = preset.values[f.key] ?? f.defaultValue;
-      newInputs[f.key] = Array.isArray(val) ? val.join(', ') : val;
+      newInputs[f.key] = formatValueForInput(val);
     });
 
     setInputs(newInputs);
@@ -79,7 +93,7 @@ export const VisualizerCustomInput: React.FC<VisualizerCustomInputProps> = ({
   const handleResetToDefault = () => {
     const initial: Record<string, any> = {};
     config.fields.forEach((f) => {
-      initial[f.key] = Array.isArray(f.defaultValue) ? f.defaultValue.join(', ') : f.defaultValue;
+      initial[f.key] = formatValueForInput(f.defaultValue);
     });
     setInputs(initial);
     setActivePresetIndex(null);
