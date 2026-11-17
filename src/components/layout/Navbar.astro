@@ -5,9 +5,23 @@ import { getUrl } from '../../utils/url';
 ---
 
 <header class="sticky top-0 z-40 w-full border-b border-[#262626] bg-black/80 backdrop-blur-md transition-all">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-    <!-- Brand / Logo -->
-    <div class="flex items-center gap-6">
+  <div class="w-full px-3 sm:px-5 lg:px-6 h-14 flex items-center justify-between">
+    <!-- Brand / Logo & Desktop Sidebar Toggle -->
+    <div class="flex items-center gap-3 sm:gap-5">
+      <!-- Desktop Sidebar Toggle Button -->
+      <button
+        id="desktop-sidebar-toggle-btn"
+        type="button"
+        class="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-text-muted hover:text-white hover:bg-[#141414] border border-[#222222] hover:border-[#333333] transition-colors"
+        title="Toggle sidebar (Ctrl+B / ⌘B)"
+        aria-label="Toggle sidebar"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <rect width="18" height="18" x="3" y="3" rx="2" stroke="currentColor" />
+          <path d="M9 3v18" stroke="currentColor" />
+        </svg>
+      </button>
+
       <a href={getUrl("/")} class="flex items-center gap-2.5 group">
         <!-- Vercel-style geometric triangle logo -->
         <div class="w-6 h-6 rounded flex items-center justify-center bg-white text-black transition-transform group-hover:scale-105">
@@ -59,3 +73,12 @@ import { getUrl } from '../../utils/url';
     </div>
   </div>
 </header>
+
+<script is:inline>
+  const toggleBtn = document.getElementById('desktop-sidebar-toggle-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('toggle-sidebar'));
+    });
+  }
+</script>

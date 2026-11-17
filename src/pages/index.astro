@@ -31,15 +31,15 @@ const getDifficultyClass = (diff: string) => {
   title="LeetCode 150 Revision | Algorithmic Patterns & Step-by-Step Visualizer"
   description="Master all LeetCode Top Interview 150 problems organized into 23 core algorithmic patterns with step-by-step interactive algorithm visualizations."
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+  <div class="w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-6 py-6 space-y-10">
     <!-- Hero Header -->
-    <section class="text-center max-w-3xl mx-auto space-y-6 pt-4">
+    <section class="text-center max-w-3xl mx-auto space-y-4 pt-2">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono text-text-secondary bg-[#111111] border border-[#262626]">
         <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
         <span>LeetCode Top Interview 150 Complete Blueprint</span>
       </div>
 
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-sans">
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-sans">
         Master Patterns, Not Just Solutions.
       </h1>
 
@@ -54,7 +54,7 @@ const getDifficultyClass = (diff: string) => {
     </section>
 
     <!-- Revision Progress / Stats Overview -->
-    <section class="p-6 rounded-2xl bg-[#0a0a0a] border border-[#262626] shadow-2xl">
+    <section class="p-4 sm:p-5 rounded-2xl bg-[#0a0a0a] border border-[#262626] shadow-2xl">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#1f1f1f]">
         <!-- Total Problems -->
         <div class="space-y-1 pt-4 md:pt-0">
@@ -112,8 +112,8 @@ const getDifficultyClass = (diff: string) => {
     </section>
 
     <!-- Algorithmic Patterns Grid (23 Patterns) -->
-    <section id="patterns" class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#262626]">
+    <section id="patterns" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-[#262626]">
         <div>
           <h2 class="text-2xl font-bold tracking-tight text-white font-sans">
             Algorithmic Patterns
@@ -127,7 +127,7 @@ const getDifficultyClass = (diff: string) => {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {PATTERNS.map((pattern) => (
           <PatternCard pattern={pattern} />
         ))}
@@ -135,8 +135,8 @@ const getDifficultyClass = (diff: string) => {
     </section>
 
     <!-- Problem Sheet & Interactive Visualizer Hub -->
-    <section id="problems" class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#262626]">
+    <section id="problems" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-[#262626]">
         <div>
           <h2 class="text-2xl font-bold tracking-tight text-white font-sans">
             Problem Sheet (150)

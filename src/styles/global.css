@@ -74,6 +74,24 @@
   background: #4f4f56;
 }
 
+/* Collapsible desktop sidebar styles */
+html.sidebar-collapsed #desktop-sidebar-container {
+  width: 3.5rem !important; /* 56px (w-14) */
+}
+
+html.sidebar-collapsed #desktop-sidebar-container aside {
+  width: 3.5rem !important;
+}
+
+/* Hide scrollbar for mini rail in collapsed sidebar */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .vercel-glow {
   background: radial-gradient(ellipse 60% 40% at 50% -20%, rgba(120, 119, 198, 0.15), rgba(255, 255, 255, 0));
 }

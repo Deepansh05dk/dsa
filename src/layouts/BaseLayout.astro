@@ -75,14 +75,22 @@ const {
         });
       }
     </script>
+    <!-- Prevent Collapsed Sidebar Layout Shift -->
+    <script is:inline>
+      try {
+        if (localStorage.getItem('lc150_sidebar_collapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-collapsed');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body class="min-h-screen bg-[#050505] text-[#ededed] flex flex-col font-sans antialiased selection:bg-[#333333] selection:text-white">
     <!-- Ambient Radial Glow -->
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] pointer-events-none vercel-glow z-0"></div>
 
     <div class="flex-1 flex w-full relative z-10">
-      <!-- Desktop Sidebar (Fixed docked on lg screens) -->
-      <div class="hidden lg:block w-72 shrink-0 h-screen sticky top-0 z-30">
+      <!-- Desktop Sidebar (Collapsible docked rail on lg screens) -->
+      <div id="desktop-sidebar-container" class="hidden lg:block w-72 shrink-0 h-screen sticky top-0 z-30 transition-[width] duration-300 ease-in-out">
         <Sidebar client:load currentPatternSlug={patternSlug} currentProblemId={problemId} />
       </div>
 
