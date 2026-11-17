@@ -273,7 +273,6 @@ export function simulateContainerWithMostWater(heights: number[]): VisualizerSte
           { label: 'L', index: left, color: '#38bdf8' },
           { label: 'R', index: right, color: '#a78bfa' },
         ],
-        window: { left, right },
       },
     });
 
@@ -299,7 +298,6 @@ export function simulateContainerWithMostWater(heights: number[]): VisualizerSte
         { label: 'Best L', index: bestLeft, color: '#34d399' },
         { label: 'Best R', index: bestRight, color: '#34d399' },
       ],
-      window: { left: bestLeft, right: bestRight },
     },
   });
 
@@ -426,7 +424,6 @@ export function simulateBinarySearch(rawNums: number[], target: number): Visuali
         { label: 'L', index: low, color: '#38bdf8' },
         { label: 'R', index: high, color: '#a78bfa' },
       ],
-      window: { left: low, right: high },
     },
   });
 
@@ -450,7 +447,6 @@ export function simulateBinarySearch(rawNums: number[], target: number): Visuali
           { label: 'Mid', index: mid, color: '#fbbf24' },
           { label: 'R', index: high, color: '#a78bfa' },
         ],
-        window: { left: low, right: high },
       },
     });
 
@@ -668,7 +664,6 @@ export function simulateKadane(nums: number[]): VisualizerStep[] {
     arrayState: {
       elements: nums.map((v) => ({ value: v, status: 'default' })),
       pointers: [{ label: 'i', index: 0, color: '#38bdf8' }],
-      window: { left: 0, right: 0 },
     },
   });
 
@@ -699,7 +694,7 @@ export function simulateKadane(nums: number[]): VisualizerStep[] {
             isNewMax ? ` New maximum sum: ${maxSum}!` : ''
           }`,
       codeLineHighlight: 4,
-      variables: { i, val, currentSum, maxSum, window: `[${windowStart}..${i}]` },
+      variables: { i, val, currentSum, maxSum, subarray: `[${windowStart}..${i}]` },
       arrayState: {
         elements: nums.map((v, idx) => ({
           value: v,
@@ -709,7 +704,6 @@ export function simulateKadane(nums: number[]): VisualizerStep[] {
           { label: 'Start', index: windowStart, color: '#34d399' },
           { label: 'i', index: i, color: '#38bdf8' },
         ],
-        window: { left: windowStart, right: i },
       },
     });
   }
@@ -729,7 +723,6 @@ export function simulateKadane(nums: number[]): VisualizerStep[] {
         { label: 'L', index: bestStart, color: '#34d399' },
         { label: 'R', index: bestEnd, color: '#34d399' },
       ],
-      window: { left: bestStart, right: bestEnd },
     },
   });
 
@@ -1158,7 +1151,6 @@ export function simulateUniversalArray(nums: number[], target?: number): Visuali
           { label: 'L', index: left, color: '#38bdf8' },
           { label: 'R', index: right, color: '#a78bfa' },
         ],
-        window: { left, right },
       },
     });
 

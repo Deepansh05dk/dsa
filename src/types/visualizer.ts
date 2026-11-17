@@ -17,6 +17,7 @@ export interface VisualizerStep {
     window?: {
       left: number;
       right: number;
+      label?: string;
     };
   };
   matrixState?: {
@@ -75,6 +76,18 @@ export interface VisualizerStep {
   graphState?: {
     nodes: Array<{ id: string; label: string; status: 'unvisited' | 'visiting' | 'visited' }>;
     edges: Array<{ from: string; to: string; weight?: number; active?: boolean }>;
+  };
+  trieState?: {
+    rootId?: string;
+    nodes: Array<{
+      id: string;
+      char: string;
+      isEndOfWord?: boolean;
+      children?: string[];
+      status?: 'default' | 'current' | 'matched' | 'inserted' | 'highlighted';
+    }>;
+    activeWord?: string;
+    searchWord?: string;
   };
 }
 

@@ -62,11 +62,11 @@ export const ArrayRenderer: React.FC<ArrayRendererProps> = ({ state }) => {
 
   return (
     <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
-      {/* Sliding Window Banner if active */}
+      {/* Range or Window Banner if active */}
       {windowRange && (
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a192f] border border-[#0070f3]/40 text-[11px] font-mono text-blue-400">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-          <span>Sliding Window:</span>
+          <span>{windowRange.label || 'Sliding Window'}:</span>
           <span className="font-semibold text-white">
             [{windowRange.left} .. {windowRange.right}]
           </span>

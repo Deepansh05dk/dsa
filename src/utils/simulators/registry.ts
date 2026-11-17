@@ -30,6 +30,20 @@ import {
   simulateLinkedListPattern,
   simulateIntervalsPattern,
   simulateHashMapPattern,
+  simulateTriePattern,
+  simulateHeapPattern,
+  simulateMultidimensionalDPPattern,
+  simulate1DDPPattern,
+  simulateGraphPattern,
+  simulateBacktrackingPattern,
+  simulateDivideAndConquerPattern,
+  simulateBitManipulationPattern,
+  simulateMathPattern,
+  simulateStackPattern,
+  simulateSlidingWindowPattern,
+  simulateBinarySearchPattern,
+  simulateTwoPointersPattern,
+  simulateKadanePattern,
 } from './pattern-engines';
 
 /**
@@ -636,33 +650,50 @@ export function getSimulatorConfigForProblem(problem: LeetCodeProblem): ProblemI
   // 3. Pattern execution dispatcher
   let simulatorFn: (input: Record<string, any>, p: LeetCodeProblem) => any;
 
-  if (pattern.includes('tree') || category.includes('tree')) {
+  if (pattern.includes('trie') || category.includes('trie')) {
+    simulatorFn = (input, p) => simulateTriePattern(input, p);
+  } else if (pattern.includes('heap') || category.includes('heap')) {
+    simulatorFn = (input, p) => simulateHeapPattern(input, p);
+  } else if (pattern.includes('multidimensional-dp') || category.includes('multidimensional dp')) {
+    simulatorFn = (input, p) => simulateMultidimensionalDPPattern(input, p);
+  } else if (pattern.includes('1d-dp') || category.includes('1d dp')) {
+    simulatorFn = (input, p) => simulate1DDPPattern(input, p);
+  } else if (pattern.includes('backtracking') || category.includes('backtracking')) {
+    simulatorFn = (input, p) => simulateBacktrackingPattern(input, p);
+  } else if (pattern.includes('divide-and-conquer') || category.includes('divide and conquer')) {
+    simulatorFn = (input, p) => simulateDivideAndConquerPattern(input, p);
+  } else if (pattern.includes('bit-manipulation') || category.includes('bit manipulation')) {
+    simulatorFn = (input, p) => simulateBitManipulationPattern(input, p);
+  } else if (pattern.includes('math') || category.includes('math')) {
+    simulatorFn = (input, p) => simulateMathPattern(input, p);
+  } else if (pattern.includes('stack') || category.includes('stack')) {
+    simulatorFn = (input, p) => simulateStackPattern(input, p);
+  } else if (pattern.includes('sliding-window') || category.includes('sliding window')) {
+    simulatorFn = (input, p) => simulateSlidingWindowPattern(input, p);
+  } else if (pattern === 'binary-search' || (pattern.includes('binary-search') && !pattern.includes('tree'))) {
+    simulatorFn = (input, p) => simulateBinarySearchPattern(input, p);
+  } else if (pattern.includes('two-pointers') || category.includes('two pointers')) {
+    simulatorFn = (input, p) => simulateTwoPointersPattern(input, p);
+  } else if (pattern.includes('kadanes-algorithm') || category.includes('kadane')) {
+    simulatorFn = (input, p) => simulateKadanePattern(input, p);
+  } else if (pattern.includes('tree') || category.includes('tree')) {
     simulatorFn = (input, p) => simulateTreePattern(input, p);
-  } else if (pattern.includes('matrix') || category.includes('matrix') || pattern.includes('graph') || category.includes('graph')) {
-    simulatorFn = (input, p) => simulateMatrixPattern(input, p);
   } else if (pattern.includes('linked-list') || category.includes('linked list')) {
     simulatorFn = (input, p) => simulateLinkedListPattern(input, p);
   } else if (pattern.includes('intervals') || category.includes('intervals')) {
     simulatorFn = (input, p) => simulateIntervalsPattern(input, p);
   } else if (pattern.includes('hashmap') || category.includes('hashmap')) {
     simulatorFn = (input, p) => simulateHashMapPattern(input, p);
-  } else if (pattern.includes('stack') || category.includes('stack')) {
-    simulatorFn = (input) => simulateValidParentheses(input.s ?? input.input ?? '()[]{}');
-  } else if (pattern.includes('sliding-window') || category.includes('sliding window')) {
-    simulatorFn = (input) => simulateSlidingWindowSubstr(input.s ?? input.input ?? 'abcabcbb');
-  } else if (pattern.includes('binary-search') || category.includes('binary search')) {
-    simulatorFn = (input) => {
-      const nums = parseNumberArray(input.nums ?? input.input, [1, 3, 5, 7, 9, 11]);
-      const target = parseSingleNumber(input.target, 7);
-      return simulateBinarySearch(nums, target);
-    };
-  } else if (pattern.includes('1d-dp') || category.includes('1d dp')) {
-    simulatorFn = (input) => {
-      const n = parseSingleNumber(input.n ?? input.amount ?? input.input, 5);
-      return simulateClimbingStairs(n);
-    };
+  } else if (pattern.includes('graph') || category.includes('graph')) {
+    if (problem.id === 200 || problem.id === 130) {
+      simulatorFn = (input, p) => simulateMatrixPattern(input, p);
+    } else {
+      simulatorFn = (input, p) => simulateGraphPattern(input, p);
+    }
+  } else if (pattern.includes('matrix') || category.includes('matrix')) {
+    simulatorFn = (input, p) => simulateMatrixPattern(input, p);
   } else {
-    // Universal Array / Two-Pointers fallback
+    // Universal Array fallback
     simulatorFn = (input) => {
       const nums = parseNumberArray(
         input.nums ?? input.nums1 ?? input.prices ?? input.heights ?? input.input,

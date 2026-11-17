@@ -361,7 +361,6 @@ export const ARRAY_TRACES: Record<number, VisualizerStep[]> = {
           { label: 'start', index: 3, color: '#00df72' },
           { label: 'end', index: 6, color: '#00df72' },
         ],
-        window: { left: 3, right: 6 },
       },
     },
     {
@@ -382,7 +381,6 @@ export const ARRAY_TRACES: Record<number, VisualizerStep[]> = {
           { value: -5, status: 'eliminated' },
           { value: 4, status: 'eliminated' },
         ],
-        window: { left: 3, right: 6 },
       },
     },
   ],
