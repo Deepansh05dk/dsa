@@ -1,29 +1,34 @@
 import { useState, useEffect } from 'react';
-import { Download, Smartphone, X, Check } from 'lucide-react';
+import { Download, Smartphone, X } from 'lucide-react';
 
 export default function InstallPwa() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(true); // default true until client checks
-  const [isMobile, setIsMobile] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(true);
 
   useEffect(() => {
-    // Check if running in standalone mode (already installed as PWA)
+    // Strictly verify if the current window is running inside the standalone PWA container
     const checkStandalone = () => {
-      const isStandalone =
+      const standalone =
         window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true ||
-        document.referrer.includes('android-app://');
-      setIsInstalled(isStandalone);
+        (window.navigator as any).standalone === true;
+      setIsStandalone(standalone);
     };
 
     checkStandalone();
 
-    // Check device type
-    const userAgent = navigator.userAgent.toLowerCase();
-    const mobileDetected = /android|iphone|ipad|ipod|mobile/i.test(userAgent);
-    setIsMobile(mobileDetected);
+    // Listen to media query changes (e.g. if opened in PWA mode)
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      setIsStandalone(e.matches);
+    };
+    try {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    } catch {
+      // Safari legacy support
+      mediaQuery.addListener(handleMediaChange);
+    }
 
     // Check banner dismissal from sessionStorage
     const dismissed = sessionStorage.getItem('lc150_pwa_banner_dismissed') === 'true';
@@ -37,7 +42,7 @@ export default function InstallPwa() {
     };
 
     const handleAppInstalled = () => {
-      setIsInstalled(true);
+      setIsStandalone(true);
       setDeferredPrompt(null);
       setBannerDismissed(true);
       console.log('[PWA] App successfully installed');
@@ -49,6 +54,11 @@ export default function InstallPwa() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      try {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      } catch {
+        mediaQuery.removeListener(handleMediaChange);
+      }
     };
   }, []);
 
@@ -58,7 +68,7 @@ export default function InstallPwa() {
         deferredPrompt.prompt();
         const choice = await deferredPrompt.userChoice;
         if (choice.outcome === 'accepted') {
-          setIsInstalled(true);
+          setIsStandalone(true);
           setBannerDismissed(true);
         }
         setDeferredPrompt(null);
@@ -67,7 +77,7 @@ export default function InstallPwa() {
         setShowInstructions(true);
       }
     } else {
-      // If native deferred prompt isn't directly triggered, show step-by-step Android Chrome guide
+      // If native deferred prompt isn't directly invocable, show visual step-by-step guide
       setShowInstructions(true);
     }
   };
@@ -77,18 +87,14 @@ export default function InstallPwa() {
     sessionStorage.setItem('lc150_pwa_banner_dismissed', 'true');
   };
 
-  if (isInstalled) {
-    return (
-      <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono text-accent-emerald bg-[#062817] border border-[#059669]/30">
-        <Check className="w-3.5 h-3.5" />
-        <span>App Installed</span>
-      </div>
-    );
+  // If already inside the installed standalone PWA app window, hide the install prompts
+  if (isStandalone) {
+    return null;
   }
 
   return (
     <>
-      {/* Navbar Install Trigger Button */}
+      {/* Navbar Install Trigger Button - Always clickable in browser */}
       <button
         type="button"
         onClick={handleInstallClick}
@@ -100,7 +106,7 @@ export default function InstallPwa() {
         <span className="sm:hidden">Install</span>
       </button>
 
-      {/* Mobile Floating Bottom Banner (Only when on mobile and not dismissed) */}
+      {/* Mobile Floating Bottom Banner (Shown in mobile Chrome when not dismissed) */}
       {!bannerDismissed && (
         <aside
           aria-label="PWA install banner"
@@ -196,7 +202,7 @@ export default function InstallPwa() {
                   3
                 </span>
                 <p className="text-text-secondary leading-relaxed">
-                  Tap <strong className="text-white">Install</strong> when prompted. The app icon will appear directly on your Android phone's home screen!
+                  Tap <strong className="text-white">Install</strong> when prompted. The app icon will appear directly on your phone's home screen!
                 </p>
               </div>
             </div>
@@ -206,7 +212,7 @@ export default function InstallPwa() {
               <button
                 type="button"
                 onClick={() => setShowInstructions(false)}
-                className="px-4 py-1.5 rounded-lg text-xs font-medium bg-[#141414] hover:bg-[#1e1e1e] text-white border border-[#262626] transition-colors"
+                className="px-4 py-1.5 rounded-lg text-xs font-medium bg-white text-black hover:bg-[#eaeaea] transition-colors"
               >
                 Got it
               </button>
