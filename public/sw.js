@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lc150-pwa-v1';
+const CACHE_NAME = 'lc150-pwa-v2';
 
 // Base scope where the service worker is running
 const BASE_PATH = self.registration.scope;
@@ -14,25 +14,29 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('[SW] Pre-caching failed for some assets:', err);
-      });
-    }).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .catch((err) => console.warn('[SW] Pre-caching warning:', err))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.map((key) => {
+            if (key !== CACHE_NAME) {
+              console.log('[SW] Purging old cache:', key);
+              return caches.delete(key);
+            }
+          })
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
@@ -49,25 +53,26 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response && response.status === 200) {
+          if (response && response.status === 200 && response.type === 'basic') {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return response;
         })
         .catch(async () => {
+          // Offline fallback: ONLY return cached response for THIS specific URL, NEVER fallback to home page!
           const cached = await caches.match(request);
           if (cached) return cached;
-          const fallback = await caches.match(BASE_PATH);
-          return fallback || new Response('Offline - please reconnect to internet.', {
-            headers: { 'Content-Type': 'text/plain' },
-          });
+          return new Response(
+            '<!DOCTYPE html><html><body style="background:#000;color:#fff;font-family:sans-serif;text-align:center;padding:50px;"><h2>Offline</h2><p>This page is not yet cached. Please reconnect to the internet and refresh.</p></body></html>',
+            { headers: { 'Content-Type': 'text/html' } }
+          );
         })
     );
     return;
   }
 
-  // Static assets (CSS, JS, Fonts, Images)
+  // Static assets (CSS, JS, Fonts, Images, Icons)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {

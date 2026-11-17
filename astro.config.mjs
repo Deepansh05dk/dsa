@@ -4,8 +4,9 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://Deepansh05dk.github.io',
+  site: 'https://deepansh05dk.github.io',
   base: '/dsa',
+  trailingSlash: 'always',
   output: 'static',
   integrations: [
     react(),
