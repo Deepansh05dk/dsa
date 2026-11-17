@@ -1,5 +1,6 @@
 ---
 import GlobalSearch from '../ui/GlobalSearch';
+import InstallPwa from '../ui/InstallPwa';
 import { getUrl } from '../../utils/url';
 ---
 
@@ -34,8 +35,9 @@ import { getUrl } from '../../utils/url';
     </div>
 
     <!-- Right Controls: Global Search Island & Social Links -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5 sm:gap-3">
       <GlobalSearch client:idle />
+      <InstallPwa client:load />
 
       <a
         href="https://github.com/Deepansh05dk/dsa"

@@ -21,6 +21,7 @@ An interactive revision web application built with [Astro](https://astro.build) 
   - Arrays, Matrices, Stacks, and HashMaps
 - **Vercel-Inspired Dark UI:** Deep monochrome design, ambient glows, Geist Sans & Geist Mono typography.
 - **Global Search (`⌘K` / `Ctrl+K`):** Instant search modal across all 150 problems and 23 patterns.
+- **Progressive Web App (PWA) / Android Installable:** Full Web App Manifest, Service Worker offline caching, adaptive splash/home-screen icons, and one-tap install on Android Chrome.
 
 ---
 

@@ -23,6 +23,15 @@ const {
     <link rel="icon" type="image/svg+xml" href={getUrl("/favicon.svg")} />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- PWA Web App Manifest & Android / Mobile App Capabilities -->
+    <link rel="manifest" href={getUrl("/manifest.webmanifest")} />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LeetCode 150" />
+    <meta name="application-name" content="LeetCode 150" />
+    <link rel="apple-touch-icon" href={getUrl("/icons/apple-touch-icon.png")} />
+
     <!-- SEO / Metadata -->
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -38,6 +47,19 @@ const {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+
+    <!-- Service Worker Registration for PWA Offline & Installability -->
+    <script is:inline define:vars={{ swUrl: getUrl('/sw.js'), swScope: getUrl('/') }}>
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register(swUrl, { scope: swScope })
+            .catch((err) => {
+              console.debug('[PWA] SW register skipped:', err);
+            });
+        });
+      }
+    </script>
   </head>
   <body class="min-h-screen bg-black text-[#ededed] flex flex-col font-sans antialiased selection:bg-[#333333] selection:text-white">
     <!-- Ambient Radial Glow -->
