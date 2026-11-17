@@ -48,7 +48,7 @@ export const MatrixRenderer: React.FC<MatrixRendererProps> = ({ state }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Matrix Metadata & Pointers Banner */}
       <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-[#888888]">
         <span className="px-2 py-0.5 rounded bg-[#111111] border border-[#262626]">
@@ -67,62 +67,64 @@ export const MatrixRenderer: React.FC<MatrixRendererProps> = ({ state }) => {
       </div>
 
       {/* 2D Grid with Row & Column Indices */}
-      <div className="overflow-x-auto max-w-full pb-2">
-        <div className="inline-block">
-          {/* Column Indices Header */}
-          <div className="flex pl-10 mb-1 gap-1.5">
-            {Array.from({ length: numCols }).map((_, c) => (
-              <div
-                key={c}
-                className={`w-11 sm:w-12 text-center font-mono text-[11px] transition-colors ${
-                  colPointer === c
-                    ? 'text-blue-400 font-bold'
-                    : 'text-[#666666]'
-                }`}
-              >
-                {colPointer === c ? `c=${c} ▼` : `c${c}`}
-              </div>
-            ))}
-          </div>
-
-          {/* Grid Rows */}
-          <div className="flex flex-col gap-1.5">
-            {grid.map((row, r) => (
-              <div key={r} className="flex items-center gap-1.5">
-                {/* Row Index Header */}
+      <div className="w-full max-w-full overflow-x-auto pb-3 pt-2 visualizer-scroll">
+        <div className="min-w-full w-max flex justify-center px-4">
+          <div className="inline-block">
+            {/* Column Indices Header */}
+            <div className="flex pl-10 mb-1 gap-1.5">
+              {Array.from({ length: numCols }).map((_, c) => (
                 <div
-                  className={`w-9 text-right pr-2 font-mono text-[11px] transition-colors ${
-                    rowPointer === r
+                  key={c}
+                  className={`w-11 sm:w-12 text-center font-mono text-[11px] transition-colors flex-shrink-0 ${
+                    colPointer === c
                       ? 'text-blue-400 font-bold'
                       : 'text-[#666666]'
                   }`}
                 >
-                  {rowPointer === r ? `▶ r${r}` : `r${r}`}
+                  {colPointer === c ? `c=${c} ▼` : `c${c}`}
                 </div>
+              ))}
+            </div>
 
-                {/* Row Cells */}
-                {row.map((cell, c) => {
-                  const isPointerFocus =
-                    rowPointer === r && colPointer === c;
+            {/* Grid Rows */}
+            <div className="flex flex-col gap-1.5">
+              {grid.map((row, r) => (
+                <div key={r} className="flex items-center gap-1.5">
+                  {/* Row Index Header */}
+                  <div
+                    className={`w-9 text-right pr-2 font-mono text-[11px] transition-colors flex-shrink-0 ${
+                      rowPointer === r
+                        ? 'text-blue-400 font-bold'
+                        : 'text-[#666666]'
+                    }`}
+                  >
+                    {rowPointer === r ? `▶ r${r}` : `r${r}`}
+                  </div>
 
-                  return (
-                    <div
-                      key={c}
-                      className={`w-11 h-11 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center border font-mono font-bold text-xs sm:text-sm ${getStatusClasses(
-                        cell.status,
-                        isPointerFocus
-                      )}`}
-                      title={`Cell [${r}, ${c}]: ${cell.value} (${cell.status})`}
-                    >
-                      <span>{cell.value}</span>
-                      <span className="text-[8px] font-mono opacity-50 -mt-0.5">
-                        {r},{c}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+                  {/* Row Cells */}
+                  {row.map((cell, c) => {
+                    const isPointerFocus =
+                      rowPointer === r && colPointer === c;
+
+                    return (
+                      <div
+                        key={c}
+                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center border font-mono font-bold text-xs sm:text-sm flex-shrink-0 ${getStatusClasses(
+                          cell.status,
+                          isPointerFocus
+                        )}`}
+                        title={`Cell [${r}, ${c}]: ${cell.value} (${cell.status})`}
+                      >
+                        <span>{cell.value}</span>
+                        <span className="text-[8px] font-mono opacity-50 -mt-0.5">
+                          {r},{c}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

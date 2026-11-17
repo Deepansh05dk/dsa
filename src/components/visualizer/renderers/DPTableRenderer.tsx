@@ -39,7 +39,7 @@ export const DPTableRenderer: React.FC<DPTableRendererProps> = ({ state }) => {
   }
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Recurrence Formula Callout Banner */}
       <div className="w-full flex flex-col gap-2 p-3 bg-[#0a111a] border border-[#172a45] rounded-lg">
         <div className="flex items-center justify-between text-xs font-mono flex-wrap gap-2">
@@ -79,9 +79,9 @@ export const DPTableRenderer: React.FC<DPTableRendererProps> = ({ state }) => {
       {/* Render 1D or 2D Dynamic Programming State */}
       {!is2D ? (
         /* 1D DP Array Display */
-        <div className="w-full flex flex-col items-center gap-2">
-          <div className="w-full overflow-x-auto pb-3 pt-1 flex justify-center">
-            <div className="inline-flex gap-2.5 items-end px-2">
+        <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-2">
+          <div className="w-full max-w-full overflow-x-auto pb-3 pt-1 visualizer-scroll">
+            <div className="min-w-full w-max flex justify-center items-end gap-2.5 px-6">
               {(values as Array<string | number>).map((val, idx) => {
                 const isActive = activeCol === idx;
                 const isReferenced1 = activeCol !== null && idx === activeCol - 1;
@@ -109,7 +109,7 @@ export const DPTableRenderer: React.FC<DPTableRendererProps> = ({ state }) => {
                 }
 
                 return (
-                  <div key={idx} className="flex flex-col items-center">
+                  <div key={idx} className="flex flex-col items-center flex-shrink-0">
                     {/* Top Callout for Active / Referenced cell */}
                     <div className="min-h-[24px] flex items-end mb-1">
                       {isActive && (
@@ -146,111 +146,113 @@ export const DPTableRenderer: React.FC<DPTableRendererProps> = ({ state }) => {
         </div>
       ) : (
         /* 2D DP Matrix Display */
-        <div className="w-full overflow-x-auto max-w-full pb-2">
+        <div className="w-full max-w-full overflow-x-auto pb-3 pt-2 visualizer-scroll">
           {(() => {
             const grid = values as Array<Array<string | number>>;
             const numCols = grid[0] ? grid[0].length : 0;
 
             return (
-              <div className="inline-block min-w-max mx-auto">
-                {/* Column Headers */}
-                <div className="flex pl-10 mb-1 gap-1.5">
-                  {Array.from({ length: numCols }).map((_, c) => (
-                    <div
-                      key={c}
-                      className={`w-11 sm:w-12 text-center font-mono text-[11px] transition-colors ${
-                        activeCol === c
-                          ? 'text-blue-400 font-bold'
-                          : 'text-[#666666]'
-                      }`}
-                    >
-                      {activeCol === c ? `c=${c} ▼` : `c${c}`}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Matrix Rows */}
-                <div className="flex flex-col gap-1.5">
-                  {grid.map((row, r) => (
-                    <div key={r} className="flex items-center gap-1.5">
-                      {/* Row Header */}
+              <div className="min-w-full w-max flex justify-center px-4">
+                <div className="inline-block">
+                  {/* Column Headers */}
+                  <div className="flex pl-10 mb-1 gap-1.5">
+                    {Array.from({ length: numCols }).map((_, c) => (
                       <div
-                        className={`w-9 text-right pr-2 font-mono text-[11px] transition-colors ${
-                          activeRow === r
+                        key={c}
+                        className={`w-11 sm:w-12 text-center font-mono text-[11px] transition-colors flex-shrink-0 ${
+                          activeCol === c
                             ? 'text-blue-400 font-bold'
                             : 'text-[#666666]'
                         }`}
                       >
-                        {activeRow === r ? `▶ r${r}` : `r${r}`}
+                        {activeCol === c ? `c=${c} ▼` : `c${c}`}
                       </div>
+                    ))}
+                  </div>
 
-                      {/* Row Cells */}
-                      {row.map((cellVal, c) => {
-                        const isActive =
-                          activeRow === r && activeCol === c;
-                        const isTopNeighbor =
-                          activeRow !== null &&
-                          activeCol !== null &&
-                          r === activeRow - 1 &&
-                          c === activeCol;
-                        const isLeftNeighbor =
-                          activeRow !== null &&
-                          activeCol !== null &&
-                          r === activeRow &&
-                          c === activeCol - 1;
-                        const isDiagNeighbor =
-                          activeRow !== null &&
-                          activeCol !== null &&
-                          r === activeRow - 1 &&
-                          c === activeCol - 1;
-                        const isReferenced =
-                          isTopNeighbor || isLeftNeighbor || isDiagNeighbor;
+                  {/* Matrix Rows */}
+                  <div className="flex flex-col gap-1.5">
+                    {grid.map((row, r) => (
+                      <div key={r} className="flex items-center gap-1.5">
+                        {/* Row Header */}
+                        <div
+                          className={`w-9 text-right pr-2 font-mono text-[11px] transition-colors flex-shrink-0 ${
+                            activeRow === r
+                              ? 'text-blue-400 font-bold'
+                              : 'text-[#666666]'
+                          }`}
+                        >
+                          {activeRow === r ? `▶ r${r}` : `r${r}`}
+                        </div>
 
-                        let cellClasses =
-                          'w-11 h-11 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center border font-mono font-bold text-xs sm:text-sm transition-all duration-200 ';
+                        {/* Row Cells */}
+                        {row.map((cellVal, c) => {
+                          const isActive =
+                            activeRow === r && activeCol === c;
+                          const isTopNeighbor =
+                            activeRow !== null &&
+                            activeCol !== null &&
+                            r === activeRow - 1 &&
+                            c === activeCol;
+                          const isLeftNeighbor =
+                            activeRow !== null &&
+                            activeCol !== null &&
+                            r === activeRow &&
+                            c === activeCol - 1;
+                          const isDiagNeighbor =
+                            activeRow !== null &&
+                            activeCol !== null &&
+                            r === activeRow - 1 &&
+                            c === activeCol - 1;
+                          const isReferenced =
+                            isTopNeighbor || isLeftNeighbor || isDiagNeighbor;
 
-                        if (isActive) {
-                          cellClasses +=
-                            'bg-[rgba(0,112,243,0.25)] border-[#0070f3] text-white shadow-[0_0_12px_rgba(0,112,243,0.45)] ring-2 ring-[#0070f3] scale-105';
-                        } else if (isReferenced) {
-                          cellClasses +=
-                            'bg-[rgba(245,166,35,0.18)] border-[#f5a623] text-[#f5a623] ring-1 ring-[#f5a623]/60';
-                        } else if (
-                          activeRow !== null &&
-                          (r < activeRow ||
-                            (r === activeRow && activeCol !== null && c < activeCol))
-                        ) {
-                          cellClasses +=
-                            'bg-[#0f1710] border-[#00df72]/30 text-emerald-400';
-                        } else if (
-                          activeRow !== null &&
-                          (r > activeRow ||
-                            (r === activeRow && activeCol !== null && c > activeCol))
-                        ) {
-                          cellClasses +=
-                            'bg-[#0a0a0a] border-[#222222] text-[#444444] border-dashed';
-                        } else {
-                          cellClasses +=
-                            'bg-[#141414] border-[#262626] text-[#ededed]';
-                        }
+                          let cellClasses =
+                            'w-11 h-11 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center border font-mono font-bold text-xs sm:text-sm transition-all duration-200 flex-shrink-0 ';
 
-                        return (
-                          <div
-                            key={c}
-                            className={cellClasses}
-                            title={`dp[${r}][${c}] = ${cellVal}`}
-                          >
-                            <span>
-                              {cellVal === null || cellVal === undefined ? '—' : cellVal}
-                            </span>
-                            <span className="text-[8px] font-mono opacity-50 -mt-0.5">
-                              {r},{c}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
+                          if (isActive) {
+                            cellClasses +=
+                              'bg-[rgba(0,112,243,0.25)] border-[#0070f3] text-white shadow-[0_0_12px_rgba(0,112,243,0.45)] ring-2 ring-[#0070f3] scale-105';
+                          } else if (isReferenced) {
+                            cellClasses +=
+                              'bg-[rgba(245,166,35,0.18)] border-[#f5a623] text-[#f5a623] ring-1 ring-[#f5a623]/60';
+                          } else if (
+                            activeRow !== null &&
+                            (r < activeRow ||
+                              (r === activeRow && activeCol !== null && c < activeCol))
+                          ) {
+                            cellClasses +=
+                              'bg-[#0f1710] border-[#00df72]/30 text-emerald-400';
+                          } else if (
+                            activeRow !== null &&
+                            (r > activeRow ||
+                              (r === activeRow && activeCol !== null && c > activeCol))
+                          ) {
+                            cellClasses +=
+                              'bg-[#0a0a0a] border-[#222222] text-[#444444] border-dashed';
+                          } else {
+                            cellClasses +=
+                              'bg-[#141414] border-[#262626] text-[#ededed]';
+                          }
+
+                          return (
+                            <div
+                              key={c}
+                              className={cellClasses}
+                              title={`dp[${r}][${c}] = ${cellVal}`}
+                            >
+                              <span>
+                                {cellVal === null || cellVal === undefined ? '—' : cellVal}
+                              </span>
+                              <span className="text-[8px] font-mono opacity-50 -mt-0.5">
+                                {r},{c}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             );

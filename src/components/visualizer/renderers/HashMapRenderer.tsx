@@ -61,7 +61,7 @@ export const HashMapRenderer: React.FC<HashMapRendererProps> = ({ state }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Header with Entry Count */}
       <div className="w-full flex items-center justify-between text-xs font-mono px-1">
         <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export const HashMapRenderer: React.FC<HashMapRendererProps> = ({ state }) => {
       </div>
 
       {/* Hash Map Table */}
-      <div className="w-full overflow-x-auto">
+      <div className="w-full max-w-full overflow-x-auto pb-2 visualizer-scroll">
         <table className="w-full text-left font-mono text-xs border-collapse">
           <thead>
             <tr className="border-b border-[#262626] text-[#888888] text-[11px] uppercase tracking-wider">
@@ -125,7 +125,7 @@ export const HashMapRenderer: React.FC<HashMapRendererProps> = ({ state }) => {
 
       {/* JSON representation preview */}
       {entries.length > 0 && (
-        <div className="w-full p-2.5 rounded-lg bg-[#0a0a0a] border border-[#222222] font-mono text-[11px] text-[#888888] overflow-x-auto flex items-center gap-2">
+        <div className="w-full p-2.5 rounded-lg bg-[#0a0a0a] border border-[#222222] font-mono text-[11px] text-[#888888] overflow-x-auto visualizer-scroll flex items-center gap-2">
           <span className="text-[#555555]">Map View:</span>
           <span className="text-emerald-400">
             &#123;{' '}

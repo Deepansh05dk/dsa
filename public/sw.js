@@ -18,8 +18,8 @@ const ASTRO_BUNDLE_PATHS = [
   "_astro/geist-sans-latin-600-normal.DFOURf8L.woff2",
   "_astro/geist-sans-latin-700-normal.BmN9tIp5.woff2",
   "_astro/GlobalSearch.Bk8D_g9n.js",
-  "_astro/index.5NuZ273e.css",
   "_astro/index.CaZlGE7t.js",
+  "_astro/index.DmSO0-Ww.css",
   "_astro/InstallPwa.mlzVk1RC.js",
   "_astro/layers.s0Xh7581.js",
   "_astro/MobileNav.CchxOlxr.js",
@@ -30,7 +30,7 @@ const ASTRO_BUNDLE_PATHS = [
   "_astro/SolutionTabs.juqG-dkz.js",
   "_astro/sparkles.DZqOujsE.js",
   "_astro/url.CSpEoWIG.js",
-  "_astro/VisualizerEngine.BmSr_m5q.js",
+  "_astro/VisualizerEngine.BXmz0Izw.js",
   "_astro/x.CRy6MgHK.js"
 ];
 

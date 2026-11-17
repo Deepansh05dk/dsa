@@ -61,7 +61,7 @@ export const ArrayRenderer: React.FC<ArrayRendererProps> = ({ state }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Sliding Window Banner if active */}
       {windowRange && (
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a192f] border border-[#0070f3]/40 text-[11px] font-mono text-blue-400">
@@ -77,8 +77,8 @@ export const ArrayRenderer: React.FC<ArrayRendererProps> = ({ state }) => {
       )}
 
       {/* Array Elements Row with Pointers */}
-      <div className="w-full overflow-x-auto pb-2 pt-1 flex justify-center">
-        <div className="inline-flex gap-2.5 items-end px-2">
+      <div className="w-full max-w-full overflow-x-auto pb-3 pt-2 visualizer-scroll">
+        <div className="min-w-full w-max flex justify-center items-end gap-2.5 px-6">
           {elements.map((el, idx) => {
             const elPointers = pointersByIndex[idx] || [];
             const isInWindow =
@@ -87,7 +87,7 @@ export const ArrayRenderer: React.FC<ArrayRendererProps> = ({ state }) => {
               idx <= windowRange.right;
 
             return (
-              <div key={idx} className="flex flex-col items-center">
+              <div key={idx} className="flex flex-col items-center flex-shrink-0">
                 {/* Pointer Indicators (above cell) */}
                 <div className="flex flex-col items-center gap-1 min-h-[28px] justify-end mb-1">
                   {elPointers.map((p, pIdx) => (

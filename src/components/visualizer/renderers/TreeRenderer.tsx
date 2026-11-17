@@ -149,7 +149,7 @@ export const TreeRenderer: React.FC<TreeRendererProps> = ({ state }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-3 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Tree Status & Legend Header */}
       <div className="w-full flex items-center justify-between text-xs font-mono px-2 flex-wrap gap-2">
         <div className="flex items-center gap-2">
@@ -179,12 +179,13 @@ export const TreeRenderer: React.FC<TreeRendererProps> = ({ state }) => {
       </div>
 
       {/* SVG Canvas for Tree Rendering */}
-      <div className="w-full overflow-x-auto flex justify-center py-2">
-        <svg
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full max-w-[640px] select-none"
-          style={{ minHeight: `${svgHeight}px` }}
-        >
+      <div className="w-full max-w-full overflow-x-auto py-2 visualizer-scroll">
+        <div className="min-w-full w-max flex justify-center px-4">
+          <svg
+            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+            className="w-full max-w-[640px] select-none"
+            style={{ minHeight: `${svgHeight}px` }}
+          >
           {/* Connecting Parent-Child Edges */}
           <g className="edges">
             {edges.map((edge, idx) => {
@@ -269,6 +270,7 @@ export const TreeRenderer: React.FC<TreeRendererProps> = ({ state }) => {
             })}
           </g>
         </svg>
+        </div>
       </div>
     </div>
   );

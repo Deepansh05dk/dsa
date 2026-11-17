@@ -42,7 +42,7 @@ export const StackQueueRenderer: React.FC<StackQueueRendererProps> = ({ state })
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Structure Type & Size Header */}
       <div className="flex items-center gap-3 text-xs font-mono">
         <span className="px-2.5 py-0.5 rounded-full bg-[#111111] border border-[#262626] text-[#ededed] font-semibold uppercase">
@@ -118,44 +118,46 @@ export const StackQueueRenderer: React.FC<StackQueueRendererProps> = ({ state })
         </div>
       ) : (
         /* Horizontal Queue Conveyor */
-        <div className="w-full flex flex-col items-center">
-          <div className="w-full max-w-xl overflow-x-auto pb-2 flex items-center justify-center gap-2">
-            <div className="flex flex-col items-center text-[10px] font-mono text-emerald-400 font-semibold px-2">
-              <span>◀ Dequeue</span>
-              <span className="text-[#888888]">(Front)</span>
-            </div>
+        <div className="w-full max-w-full min-w-0 flex flex-col items-center">
+          <div className="w-full max-w-full overflow-x-auto pb-3 pt-2 visualizer-scroll">
+            <div className="min-w-full w-max flex items-center justify-center gap-2 px-4">
+              <div className="flex flex-col items-center text-[10px] font-mono text-emerald-400 font-semibold px-2 flex-shrink-0">
+                <span>◀ Dequeue</span>
+                <span className="text-[#888888]">(Front)</span>
+              </div>
 
-            <div className="flex items-center gap-2 p-3 bg-[#0a0a0a] border border-[#262626] rounded-xl min-w-[200px] justify-center">
-              {items.length === 0 ? (
-                <span className="text-xs font-mono text-[#555555] italic px-4">
-                  [ Empty Queue ]
-                </span>
-              ) : (
-                items.map((item, idx) => {
-                  const isFront = idx === 0;
-                  const isBack = idx === items.length - 1;
+              <div className="flex items-center gap-2 p-3 bg-[#0a0a0a] border border-[#262626] rounded-xl min-w-[200px] justify-center flex-shrink-0">
+                {items.length === 0 ? (
+                  <span className="text-xs font-mono text-[#555555] italic px-4">
+                    [ Empty Queue ]
+                  </span>
+                ) : (
+                  items.map((item, idx) => {
+                    const isFront = idx === 0;
+                    const isBack = idx === items.length - 1;
 
-                  return (
-                    <div
-                      key={idx}
-                      className={`min-w-[48px] h-14 rounded-lg flex flex-col items-center justify-center px-3 border font-mono text-xs sm:text-sm ${getItemClasses(
-                        item.status,
-                        isFront
-                      )}`}
-                    >
-                      <span className="font-semibold">{item.value}</span>
-                      <span className="text-[9px] font-mono text-[#666666]">
-                        {isFront ? 'FRONT' : isBack ? 'BACK' : `[${idx}]`}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    return (
+                      <div
+                        key={idx}
+                        className={`min-w-[48px] h-14 rounded-lg flex flex-col items-center justify-center px-3 border font-mono text-xs sm:text-sm flex-shrink-0 ${getItemClasses(
+                          item.status,
+                          isFront
+                        )}`}
+                      >
+                        <span className="font-semibold">{item.value}</span>
+                        <span className="text-[9px] font-mono text-[#666666]">
+                          {isFront ? 'FRONT' : isBack ? 'BACK' : `[${idx}]`}
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
 
-            <div className="flex flex-col items-center text-[10px] font-mono text-blue-400 font-semibold px-2">
-              <span>Enqueue ◀</span>
-              <span className="text-[#888888]">(Back)</span>
+              <div className="flex flex-col items-center text-[10px] font-mono text-blue-400 font-semibold px-2 flex-shrink-0">
+                <span>Enqueue ◀</span>
+                <span className="text-[#888888]">(Back)</span>
+              </div>
             </div>
           </div>
         </div>

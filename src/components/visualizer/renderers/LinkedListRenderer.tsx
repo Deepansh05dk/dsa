@@ -86,7 +86,7 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ state })
   }
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Linked List Info & Cycle Header */}
       <div className="w-full flex items-center justify-between text-xs font-mono px-2 flex-wrap gap-2">
         <div className="flex items-center gap-2">
@@ -109,8 +109,8 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ state })
       </div>
 
       {/* Linked List Horizontal Node Chain */}
-      <div className="w-full overflow-x-auto pb-4 pt-2 flex justify-center">
-        <div className="inline-flex items-center gap-3 px-4 min-w-max">
+      <div className="w-full max-w-full overflow-x-auto pb-4 pt-2 visualizer-scroll">
+        <div className="min-w-full w-max flex justify-center items-center gap-3 px-6">
           {nodes.map((node, idx) => {
             const hasNext = Boolean(node.nextId);
             const isCycleSource = cycleDetected && cycleDetected.fromId === node.id;
@@ -120,7 +120,7 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ state })
             return (
               <React.Fragment key={node.id || idx}>
                 {/* Node Container with Pointers */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center flex-shrink-0">
                   {/* Status Pointer Badges (Above Node) */}
                   <div className="flex flex-col items-center gap-1 min-h-[26px] justify-end mb-1.5">
                     {node.status !== 'default' && (
@@ -171,19 +171,19 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ state })
                 {/* Connecting Arrow or Terminator */}
                 {isCycleSource ? (
                   /* Cycle Back-Pointer Indicator */
-                  <div className="flex items-center px-1 text-amber-400 font-mono text-xs">
+                  <div className="flex items-center px-1 text-amber-400 font-mono text-xs flex-shrink-0">
                     <span className="px-2 py-1 rounded bg-amber-950/60 border border-amber-500/50 flex items-center gap-1 shadow-sm">
                       ↺ ──▶ [{cycleDetected?.toId}]
                     </span>
                   </div>
                 ) : hasNext ? (
                   /* Standard Forward Pointer Arrow */
-                  <div className="flex items-center text-blue-400/80 text-xl font-bold px-0.5 select-none animate-pulse">
+                  <div className="flex items-center text-blue-400/80 text-xl font-bold px-0.5 select-none animate-pulse flex-shrink-0">
                     →
                   </div>
                 ) : isLastNode || node.nextId === null ? (
                   /* NULL Terminator Badge */
-                  <div className="flex items-center gap-1.5 pl-1">
+                  <div className="flex items-center gap-1.5 pl-1 flex-shrink-0">
                     <span className="text-blue-400/80 text-xl font-bold select-none">→</span>
                     <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] text-[#888888] font-mono text-xs font-semibold">
                       <span className="text-red-400">⊘</span>
@@ -191,7 +191,7 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ state })
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center text-blue-400/80 text-xl font-bold px-0.5 select-none">
+                  <div className="flex items-center text-blue-400/80 text-xl font-bold px-0.5 select-none flex-shrink-0">
                     →
                   </div>
                 )}

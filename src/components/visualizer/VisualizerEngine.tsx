@@ -204,9 +204,9 @@ export const VisualizerEngine: React.FC<VisualizerEngineProps> = ({
       </div>
 
       {/* Dynamic Data Structure Visualizer Canvas */}
-      <div className="p-4 sm:p-6 min-h-[300px] flex flex-col items-center justify-center bg-[#050505] border-b border-[#1f1f1f] gap-4">
+      <div className="p-4 sm:p-6 min-h-[300px] flex flex-col items-center justify-center bg-[#050505] border-b border-[#1f1f1f] gap-4 w-full max-w-full min-w-0">
         {hasRenderableStructure ? (
-          <div className="w-full flex flex-col gap-4 items-center">
+          <div className="w-full max-w-full min-w-0 flex flex-col gap-4 items-center">
             {currentStepData.arrayState && (
               <ArrayRenderer state={currentStepData.arrayState} />
             )}

@@ -110,7 +110,7 @@ export const HeapRenderer: React.FC<HeapRendererProps> = ({ state }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
+    <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-4 p-4 bg-[#050505] rounded-xl border border-[#1f1f1f]">
       {/* Heap Type & Ordering Header */}
       <div className="w-full flex items-center justify-between text-xs font-mono px-2 flex-wrap gap-2">
         <div className="flex items-center gap-2">
@@ -142,15 +142,16 @@ export const HeapRenderer: React.FC<HeapRendererProps> = ({ state }) => {
       </div>
 
       {/* View 1: Complete Binary Heap Tree View */}
-      <div className="w-full overflow-x-auto flex flex-col items-center py-1">
-        <div className="text-[10px] font-mono uppercase text-[#666666] mb-1">
-          Visual Tree Hierarchy
-        </div>
-        <svg
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full max-w-[540px] select-none"
-          style={{ minHeight: `${svgHeight}px` }}
-        >
+      <div className="w-full max-w-full overflow-x-auto py-1 visualizer-scroll">
+        <div className="min-w-full w-max flex flex-col items-center px-4">
+          <div className="text-[10px] font-mono uppercase text-[#666666] mb-1">
+            Visual Tree Hierarchy
+          </div>
+          <svg
+            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+            className="w-full max-w-[540px] select-none"
+            style={{ minHeight: `${svgHeight}px` }}
+          >
           {/* Tree Edges */}
           <g className="edges">
             {edges.map((edge, idx) => {
@@ -237,17 +238,18 @@ export const HeapRenderer: React.FC<HeapRendererProps> = ({ state }) => {
             })}
           </g>
         </svg>
+        </div>
       </div>
 
       {/* View 2: Underlying 1D Array Representation */}
-      <div className="w-full flex flex-col items-center gap-1.5 pt-2 border-t border-[#1a1a1a]">
+      <div className="w-full max-w-full min-w-0 flex flex-col items-center gap-1.5 pt-2 border-t border-[#1a1a1a]">
         <div className="text-[10px] font-mono uppercase text-[#666666]">
           Underlying 1D Array Storage (Contiguous Memory)
         </div>
-        <div className="w-full overflow-x-auto pb-1 flex justify-center">
-          <div className="inline-flex gap-2 items-center px-2">
+        <div className="w-full max-w-full overflow-x-auto pb-3 pt-1 visualizer-scroll">
+          <div className="min-w-full w-max flex justify-center items-center gap-2 px-6">
             {elements.map((el, idx) => (
-              <div key={idx} className="flex flex-col items-center">
+              <div key={idx} className="flex flex-col items-center flex-shrink-0">
                 {/* Array Box */}
                 <div
                   className={`w-11 h-12 sm:w-12 sm:h-14 rounded-lg flex flex-col items-center justify-center border font-mono font-bold text-xs sm:text-sm ${getArrayElementClasses(
