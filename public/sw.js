@@ -1,4 +1,30 @@
-const CACHE_NAME = 'lc150-pwa-v3';
+const ASTRO_BUNDLE_PATHS = [
+  "_astro/client.CSOc3NPH.js",
+  "_astro/createLucideIcon.CfOKROd1.js",
+  "_astro/geist-mono-cyrillic-400-normal.C51Di1Mf.woff2",
+  "_astro/geist-mono-cyrillic-500-normal.D2cXvDHF.woff2",
+  "_astro/geist-mono-cyrillic-600-normal.Dfv53e6N.woff2",
+  "_astro/geist-mono-latin-400-normal.DTRLJnHl.woff2",
+  "_astro/geist-mono-latin-500-normal.YINYabwD.woff2",
+  "_astro/geist-mono-latin-600-normal.V-KvD_pi.woff2",
+  "_astro/geist-mono-latin-ext-400-normal.DI-rJ0UV.woff2",
+  "_astro/geist-mono-latin-ext-500-normal.Buglb9-a.woff2",
+  "_astro/geist-mono-latin-ext-600-normal.TphwrhF8.woff2",
+  "_astro/geist-sans-latin-400-normal.gapTbOY8.woff2",
+  "_astro/geist-sans-latin-500-normal.uokXdC-Q.woff2",
+  "_astro/geist-sans-latin-600-normal.DFOURf8L.woff2",
+  "_astro/geist-sans-latin-700-normal.BmN9tIp5.woff2",
+  "_astro/GlobalSearch.qfHP4Imf.js",
+  "_astro/index.CaZlGE7t.js",
+  "_astro/index.oocV7a4L.css",
+  "_astro/InstallPwa.D1r71eKd.js",
+  "_astro/jsx-runtime.CyXy1Ci3.js",
+  "_astro/SolutionTabs.CDTV2HKb.js",
+  "_astro/VisualizerEngine.B_S5ysI3.js",
+  "_astro/x.BnMsEwXa.js"
+];
+
+const CACHE_NAME = 'lc150-pwa-v4';
 
 // Base scope of the service worker (e.g. 'https://deepansh05dk.github.io/dsa/')
 const BASE_PATH = self.registration.scope;
@@ -30,6 +56,7 @@ const PRECACHE_SHELL = [
   `${BASE_PATH}icons/icon-192x192.png`,
   `${BASE_PATH}icons/icon-512x512.png`,
   `${BASE_PATH}icons/apple-touch-icon.png`,
+  ...ASTRO_BUNDLE_PATHS.map((p) => `${BASE_PATH}${p}`),
 ];
 
 // Helper to match request in cache with/without trailing slashes
@@ -53,11 +80,70 @@ async function matchInCache(req) {
   return null;
 }
 
-// Background batch-cache all 150 problems and 23 patterns
+// Scans HTML text and caches any scripts or stylesheets referenced in _astro/
+async function extractAndCacheAssets(htmlText, cache) {
+  const matches = htmlText.matchAll(/(?:src|href)="([^"]*\/_astro\/[^"]+)"/g);
+  for (const match of matches) {
+    let assetUrl = match[1];
+    if (assetUrl.startsWith('/')) {
+      assetUrl = new URL(assetUrl, self.location.origin).href;
+    }
+    try {
+      const has = await cache.match(assetUrl);
+      if (!has) {
+        const res = await fetch(assetUrl);
+        if (res && res.status === 200) {
+          await cache.put(assetUrl, res);
+        }
+      }
+    } catch (e) {
+      // Ignore individual asset fetch failure
+    }
+  }
+}
+
+// Background batch-cache all 150 problems, 23 patterns, and all client-side JS/CSS bundles
 async function cacheAllProblemsAndPatterns() {
   const cache = await caches.open(CACHE_NAME);
 
-  // Cache patterns
+  // 1. Ensure all build-time bundles are cached
+  for (const bundle of ASTRO_BUNDLE_PATHS) {
+    const url = `${BASE_PATH}${bundle}`;
+    try {
+      const has = await cache.match(url);
+      if (!has) {
+        const res = await fetch(url);
+        if (res && res.status === 200) {
+          await cache.put(url, res);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // 2. Cache home page & extract assets
+  try {
+    const homeRes = await fetch(BASE_PATH);
+    if (homeRes && homeRes.status === 200) {
+      await cache.put(BASE_PATH, homeRes.clone());
+      const htmlText = await homeRes.text();
+      await extractAndCacheAssets(htmlText, cache);
+    }
+  } catch (e) {}
+
+  // 3. Cache problem 1 immediately & extract VisualizerEngine scripts
+  try {
+    const prob1Url = `${BASE_PATH}problem/1/`;
+    const prob1Res = await fetch(prob1Url);
+    if (prob1Res && prob1Res.status === 200) {
+      await cache.put(prob1Url, prob1Res.clone());
+      const htmlText = await prob1Res.text();
+      await extractAndCacheAssets(htmlText, cache);
+    }
+  } catch (e) {}
+
+  // 4. Cache patterns
   for (const slug of PATTERN_SLUGS) {
     const url = `${BASE_PATH}patterns/${slug}/`;
     try {
@@ -65,15 +151,15 @@ async function cacheAllProblemsAndPatterns() {
       if (!match) {
         const res = await fetch(url);
         if (res && res.status === 200) {
-          await cache.put(url, res);
+          await cache.put(url, res.clone());
+          const htmlText = await res.text();
+          await extractAndCacheAssets(htmlText, cache);
         }
       }
-    } catch (e) {
-      // Ignore background fetch failure, will retry next load
-    }
+    } catch (e) {}
   }
 
-  // Cache all 150 problems in concurrent batches of 8
+  // 5. Cache remaining problems in concurrent batches of 8
   const BATCH_SIZE = 8;
   for (let i = 0; i < PROBLEM_IDS.length; i += BATCH_SIZE) {
     const batch = PROBLEM_IDS.slice(i, i + BATCH_SIZE);
@@ -85,19 +171,18 @@ async function cacheAllProblemsAndPatterns() {
           if (!match) {
             const res = await fetch(url);
             if (res && res.status === 200) {
-              await cache.put(url, res);
+              await cache.put(url, res.clone());
+              const htmlText = await res.text();
+              await extractAndCacheAssets(htmlText, cache);
             }
           }
-        } catch (e) {
-          // Ignore individual fetch failure
-        }
+        } catch (e) {}
       })
     );
   }
 
-  console.log('[SW] All 150 problems and 23 patterns are cached for full offline access!');
+  console.log('[SW] Complete offline pre-cache finished: all 150 problems, visualizers & scripts cached!');
 
-  // Notify clients that offline caching is complete
   const clients = await self.clients.matchAll();
   clients.forEach((client) => {
     client.postMessage({ type: 'ALL_PAGES_CACHED', count: PROBLEM_IDS.length });
@@ -130,7 +215,6 @@ self.addEventListener('activate', (event) => {
       })
       .then(() => self.clients.claim())
       .then(() => {
-        // Automatically start caching all 150 problems in the background
         cacheAllProblemsAndPatterns();
       })
   );
@@ -166,7 +250,6 @@ self.addEventListener('fetch', (event) => {
           if (cached) {
             return cached;
           }
-          // Fallback if not yet downloaded
           return new Response(
             `<!DOCTYPE html>
             <html lang="en" style="background:#000;color:#fff;font-family:system-ui,-apple-system,sans-serif;">
@@ -192,7 +275,7 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       const cached = await matchInCache(request);
       if (cached) {
-        // Stale-while-revalidate
+        // Stale-while-revalidate in background if online
         fetch(request)
           .then(async (res) => {
             if (res && res.status === 200) {

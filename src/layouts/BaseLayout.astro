@@ -55,6 +55,7 @@ const {
         if ('caches' in window) {
           caches.delete('lc150-pwa-v1').catch(() => {});
           caches.delete('lc150-pwa-v2').catch(() => {});
+          caches.delete('lc150-pwa-v3').catch(() => {});
         }
         window.addEventListener('load', () => {
           navigator.serviceWorker
