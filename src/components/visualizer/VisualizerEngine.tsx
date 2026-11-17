@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { VisualizerStep } from '../../types/visualizer';
 import type { LeetCodeProblem } from '../../types/problem';
 import { VisualizerControls } from './VisualizerControls';
+import { VisualizerCustomInput } from './VisualizerCustomInput';
 import { ArrayRenderer } from './renderers/ArrayRenderer';
 import { MatrixRenderer } from './renderers/MatrixRenderer';
 import { StackQueueRenderer } from './renderers/StackQueueRenderer';
@@ -25,8 +26,8 @@ export const VisualizerEngine: React.FC<VisualizerEngineProps> = ({
   problem,
   initialStep = 0,
 }) => {
-  // Resolve effective steps from explicit prop, problem trace, or default
-  const effectiveSteps = useMemo<VisualizerStep[]>(() => {
+  // Resolve default steps from explicit prop, problem trace, or fallback
+  const defaultSteps = useMemo<VisualizerStep[]>(() => {
     if (steps && steps.length > 0) {
       return steps;
     }
@@ -46,6 +47,10 @@ export const VisualizerEngine: React.FC<VisualizerEngineProps> = ({
     ];
   }, [steps, problem]);
 
+  // Dynamically simulated steps from user input
+  const [customSteps, setCustomSteps] = useState<VisualizerStep[] | null>(null);
+
+  const effectiveSteps = customSteps || defaultSteps;
   const totalSteps = Math.max(1, effectiveSteps.length);
 
   // Clamped current step index within [0, totalSteps - 1]
@@ -60,6 +65,19 @@ export const VisualizerEngine: React.FC<VisualizerEngineProps> = ({
   useEffect(() => {
     setCurrentStep((prev) => Math.max(0, Math.min(prev, totalSteps - 1)));
   }, [totalSteps]);
+
+  // Handlers for dynamic custom simulation
+  const handleSimulateCustom = (newSteps: VisualizerStep[]) => {
+    setIsPlaying(false);
+    setCustomSteps(newSteps);
+    setCurrentStep(0);
+  };
+
+  const handleResetSimulation = () => {
+    setIsPlaying(false);
+    setCustomSteps(null);
+    setCurrentStep(0);
+  };
 
   // Interval auto-advance loop
   useEffect(() => {
@@ -134,6 +152,17 @@ export const VisualizerEngine: React.FC<VisualizerEngineProps> = ({
 
   return (
     <div className="flex flex-col rounded-xl bg-[#0a0a0a] border border-[#262626] overflow-hidden shadow-2xl">
+      {/* Interactive Custom Input Runner */}
+      {problem && (
+        <VisualizerCustomInput
+          problem={problem}
+          onSimulate={handleSimulateCustom}
+          onReset={handleResetSimulation}
+          isCustomActive={customSteps !== null}
+          generatedStepCount={customSteps ? customSteps.length : undefined}
+        />
+      )}
+
       {/* Visualizer Interactive Controls Toolbar */}
       <VisualizerControls
         currentStep={currentStep}
