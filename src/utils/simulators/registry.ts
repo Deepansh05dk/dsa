@@ -18,6 +18,10 @@ import {
   simulateReverseLinkedList,
   simulateClimbingStairs,
   simulateUniversalArray,
+  simulateMergeSortedArray,
+  simulateValidAnagram,
+  simulateRemoveElement,
+  simulateRemoveDuplicates,
 } from './algorithms';
 import { extractFieldsAndPresetsFromProblem } from './param-parser';
 import {
@@ -466,6 +470,149 @@ export const PROBLEM_SIMULATORS: Record<number, ProblemInputConfig> = {
       { label: 'Example 2 [1,null,2]', values: { root: [1, null, 2] } },
     ],
     simulate: (input, prob) => simulateTreePattern(input, prob),
+  },
+
+  // 88. Merge Sorted Array
+  88: {
+    problemId: 88,
+    title: 'Merge Sorted Array',
+    fields: [
+      {
+        key: 'nums1',
+        label: 'nums1 (First Array)',
+        type: 'array',
+        placeholder: 'e.g. 1, 2, 3, 0, 0, 0',
+        defaultValue: [1, 2, 3, 0, 0, 0],
+        helpText: 'Sorted array with capacity m + n',
+      },
+      {
+        key: 'm',
+        label: 'm (Valid Elements in nums1)',
+        type: 'number',
+        placeholder: 'e.g. 3',
+        defaultValue: 3,
+        helpText: 'Count of active items in nums1',
+      },
+      {
+        key: 'nums2',
+        label: 'nums2 (Second Array)',
+        type: 'array',
+        placeholder: 'e.g. 2, 5, 6',
+        defaultValue: [2, 5, 6],
+        helpText: 'Sorted array of size n',
+      },
+      {
+        key: 'n',
+        label: 'n (Elements in nums2)',
+        type: 'number',
+        placeholder: 'e.g. 3',
+        defaultValue: 3,
+        helpText: 'Count of items in nums2',
+      },
+    ],
+    presets: [
+      { label: 'Example 1', values: { nums1: [1, 2, 3, 0, 0, 0], m: 3, nums2: [2, 5, 6], n: 3 } },
+      { label: 'Single Element', values: { nums1: [1], m: 1, nums2: [], n: 0 } },
+      { label: 'Empty nums1', values: { nums1: [0], m: 0, nums2: [1], n: 1 } },
+    ],
+    simulate: (input) => {
+      const nums1 = parseNumberArray(input.nums1, [1, 2, 3, 0, 0, 0]);
+      const m = parseSingleNumber(input.m, 3);
+      const nums2 = parseNumberArray(input.nums2, [2, 5, 6]);
+      const n = parseSingleNumber(input.n, 3);
+      return simulateMergeSortedArray(nums1, m, nums2, n);
+    },
+  },
+
+  // 242. Valid Anagram
+  242: {
+    problemId: 242,
+    title: 'Valid Anagram',
+    fields: [
+      {
+        key: 's',
+        label: 's (First String)',
+        type: 'string',
+        placeholder: 'e.g. anagram',
+        defaultValue: 'anagram',
+        helpText: 'Reference string',
+      },
+      {
+        key: 't',
+        label: 't (Candidate String)',
+        type: 'string',
+        placeholder: 'e.g. nagaram',
+        defaultValue: 'nagaram',
+        helpText: 'String to check anagram equality against',
+      },
+    ],
+    presets: [
+      { label: 'Example 1 (anagram/nagaram)', values: { s: 'anagram', t: 'nagaram' } },
+      { label: 'Example 2 (rat/car)', values: { s: 'rat', t: 'car' } },
+      { label: 'Identical (listen/silent)', values: { s: 'listen', t: 'silent' } },
+    ],
+    simulate: (input) => {
+      const s = parseStringInput(input.s, 'anagram');
+      const t = parseStringInput(input.t, 'nagaram');
+      return simulateValidAnagram(s, t);
+    },
+  },
+
+  // 27. Remove Element
+  27: {
+    problemId: 27,
+    title: 'Remove Element',
+    fields: [
+      {
+        key: 'nums',
+        label: 'nums (Array)',
+        type: 'array',
+        placeholder: 'e.g. 3, 2, 2, 3',
+        defaultValue: [3, 2, 2, 3],
+        helpText: 'Array containing target to eliminate',
+      },
+      {
+        key: 'val',
+        label: 'val (Target Value to Remove)',
+        type: 'number',
+        placeholder: 'e.g. 3',
+        defaultValue: 3,
+        helpText: 'Element value to filter out in-place',
+      },
+    ],
+    presets: [
+      { label: 'Example 1 (val = 3)', values: { nums: [3, 2, 2, 3], val: 3 } },
+      { label: 'Example 2 (val = 2)', values: { nums: [0, 1, 2, 2, 3, 0, 4, 2], val: 2 } },
+    ],
+    simulate: (input) => {
+      const nums = parseNumberArray(input.nums, [3, 2, 2, 3]);
+      const val = parseSingleNumber(input.val, 3);
+      return simulateRemoveElement(nums, val);
+    },
+  },
+
+  // 26. Remove Duplicates from Sorted Array
+  26: {
+    problemId: 26,
+    title: 'Remove Duplicates from Sorted Array',
+    fields: [
+      {
+        key: 'nums',
+        label: 'nums (Sorted Array)',
+        type: 'array',
+        placeholder: 'e.g. 1, 1, 2',
+        defaultValue: [1, 1, 2],
+        helpText: 'Sorted numbers with duplicate runs',
+      },
+    ],
+    presets: [
+      { label: 'Example 1 [1, 1, 2]', values: { nums: [1, 1, 2] } },
+      { label: 'Example 2 [0,0,1,1,1,2,2,3,3,4]', values: { nums: [0, 0, 1, 1, 1, 2, 2, 3, 3, 4] } },
+    ],
+    simulate: (input) => {
+      const nums = parseNumberArray(input.nums, [1, 1, 2]);
+      return simulateRemoveDuplicates(nums);
+    },
   },
 };
 

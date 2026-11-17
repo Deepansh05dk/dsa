@@ -295,5 +295,50 @@ describe('Dynamic Visualizer Simulators Suite', () => {
       expect(config.presets[0].values.s).toBe('anagram');
       expect(config.presets[0].values.t).toBe('nagaram');
     });
+
+    it('verifies custom matrix string input renders user-typed values in diagram', () => {
+      const p54: LeetCodeProblem = {
+        id: 54,
+        slug: 'spiral-matrix',
+        title: 'Spiral Matrix',
+        difficulty: 'Medium',
+        pattern: 'matrix',
+        category: 'Matrix',
+        statement: '',
+        examples: [{ input: 'matrix = [[1,2,3],[4,5,6],[7,8,9]]', output: '[1,2,3,6,9,8,7,4,5]' }],
+        constraints: [],
+        bruteForce: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '' },
+        optimal: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '', whyOptimalIsPreferred: '', patternInvariant: '' },
+        defaultInputDescription: '',
+      };
+      const config = getSimulatorConfigForProblem(p54);
+      const steps = config.simulate({ matrix: '[[9, 8], [7, 6]]' }, p54);
+      expect(steps[0].matrixState).toBeDefined();
+      expect(steps[0].matrixState?.grid[0][0].value).toBe(9);
+      expect(steps[0].matrixState?.grid[0][1].value).toBe(8);
+      expect(steps[0].matrixState?.grid[1][0].value).toBe(7);
+      expect(steps[0].matrixState?.grid[1][1].value).toBe(6);
+    });
+
+    it('verifies custom intervals string input renders user-typed intervals in diagram', () => {
+      const p56: LeetCodeProblem = {
+        id: 56,
+        slug: 'merge-intervals',
+        title: 'Merge Intervals',
+        difficulty: 'Medium',
+        pattern: 'intervals',
+        category: 'Intervals',
+        statement: '',
+        examples: [{ input: 'intervals = [[1,3],[2,6],[8,10],[15,18]]', output: '[[1,6],[8,10],[15,18]]' }],
+        constraints: [],
+        bruteForce: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '' },
+        optimal: { name: '', code: '', complexity: { time: '', space: '' }, explanation: '', whyOptimalIsPreferred: '', patternInvariant: '' },
+        defaultInputDescription: '',
+      };
+      const config = getSimulatorConfigForProblem(p56);
+      const steps = config.simulate({ intervals: '[[5, 10], [11, 15]]' }, p56);
+      expect(steps[0].arrayState?.elements[0].value).toBe('[5,10]');
+      expect(steps[0].arrayState?.elements[1].value).toBe('[11,15]');
+    });
   });
 });

@@ -1,6 +1,13 @@
 import type { VisualizerStep } from '../../types/visualizer';
 import type { LeetCodeProblem } from '../../types/problem';
-import { parseNumberArray, parseSingleNumber, parseStringInput } from './helpers';
+import {
+  parseNumberArray,
+  parseSingleNumber,
+  parseStringInput,
+  parse2DArray,
+  parseIntervalPairs,
+  parseTreeLevelOrder,
+} from './helpers';
 
 /**
  * 1. Tree Pattern Engine (binary-tree-general, binary-tree-bfs, binary-search-tree)
@@ -9,20 +16,7 @@ import { parseNumberArray, parseSingleNumber, parseStringInput } from './helpers
 export function simulateTreePattern(input: Record<string, any>, problem: LeetCodeProblem): VisualizerStep[] {
   const steps: VisualizerStep[] = [];
   const rawRoot = input.root ?? input.input ?? [3, 9, 20, null, null, 15, 7];
-
-  // Parse level-order values
-  let values: Array<string | number | null> = [];
-  if (Array.isArray(rawRoot)) {
-    values = rawRoot;
-  } else if (typeof rawRoot === 'string') {
-    const cleaned = rawRoot.replace(/[\[\]]/g, '').trim();
-    values = cleaned.split(/[\s,]+/).map((s) => {
-      const v = s.trim();
-      if (v === 'null' || v === '') return null;
-      const num = Number(v);
-      return isNaN(num) ? v : num;
-    });
-  }
+  const values = parseTreeLevelOrder(rawRoot);
 
   if (values.length === 0 || values[0] === null) {
     return [
@@ -67,7 +61,7 @@ export function simulateTreePattern(input: Record<string, any>, problem: LeetCod
   steps.push({
     stepIndex: 0,
     title: `Initialize Tree Traversal for ${problem.title}`,
-    description: `Constructed binary tree with ${treeNodes.length} active node(s). Root node is ${treeNodes[0]?.value}. Ready to execute optimal algorithmic traversal.`,
+    description: `Constructed binary tree with ${treeNodes.length} active node(s): [${values.filter((v) => v !== null).join(', ')}]. Root node is ${treeNodes[0]?.value}. Ready to execute optimal algorithmic traversal.`,
     codeLineHighlight: 2,
     variables: { rootVal: treeNodes[0]?.value, totalNodes: treeNodes.length, currentDepth: 1 },
     treeState: {
@@ -145,17 +139,7 @@ export function simulateMatrixPattern(input: Record<string, any>, problem: LeetC
     [7, 8, 9],
   ];
 
-  let grid: Array<Array<string | number>> = [];
-  if (Array.isArray(rawGrid) && Array.isArray(rawGrid[0])) {
-    grid = rawGrid.map((row) => row.slice(0, 6)).slice(0, 6);
-  } else {
-    grid = [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-    ];
-  }
-
+  const grid = parse2DArray(rawGrid);
   const rows = grid.length;
   const cols = grid[0]?.length || 0;
 
@@ -181,7 +165,6 @@ export function simulateMatrixPattern(input: Record<string, any>, problem: LeetC
   const visitedSet = new Set<string>();
   const traversalOrder: Array<[number, number]> = [];
 
-  // Generate bounded traversal path (e.g. raster or perimeter)
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       traversalOrder.push([r, c]);
@@ -311,23 +294,14 @@ export function simulateLinkedListPattern(input: Record<string, any>, problem: L
  */
 export function simulateIntervalsPattern(input: Record<string, any>, problem: LeetCodeProblem): VisualizerStep[] {
   const steps: VisualizerStep[] = [];
-  const rawIntervals = input.intervals ?? [
+  const rawIntervals = input.intervals ?? input.input ?? [
     [1, 3],
     [2, 6],
     [8, 10],
     [15, 18],
   ];
 
-  let intervals: Array<[number, number]> = [];
-  if (Array.isArray(rawIntervals)) {
-    intervals = rawIntervals
-      .map((item) => (Array.isArray(item) && item.length >= 2 ? [Number(item[0]), Number(item[1])] as [number, number] : null))
-      .filter((x): x is [number, number] => x !== null && !isNaN(x[0]) && !isNaN(x[1]))
-      .slice(0, 8);
-  }
-  if (intervals.length === 0) {
-    intervals = [[1, 3], [2, 6], [8, 10], [15, 18]];
-  }
+  const intervals = parseIntervalPairs(rawIntervals);
 
   // Sort intervals by start time
   intervals.sort((a, b) => a[0] - b[0]);

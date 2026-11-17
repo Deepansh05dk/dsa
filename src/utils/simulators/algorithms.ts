@@ -1179,3 +1179,416 @@ export function simulateUniversalArray(nums: number[], target?: number): Visuali
 
   return steps;
 }
+
+/**
+ * 13. Merge Sorted Array (Problem 88)
+ */
+export function simulateMergeSortedArray(
+  rawNums1: number[],
+  mInput: number,
+  rawNums2: number[],
+  nInput: number
+): VisualizerStep[] {
+  const steps: VisualizerStep[] = [];
+  const m = Math.min(rawNums1.length, Math.max(0, mInput));
+  const n = Math.min(rawNums2.length, Math.max(0, nInput));
+  const nums1 = [...rawNums1.slice(0, m), ...new Array(n).fill(0)];
+  const nums2 = [...rawNums2.slice(0, n)];
+
+  let p1 = m - 1;
+  let p2 = n - 1;
+  let p = m + n - 1;
+
+  steps.push({
+    stepIndex: 0,
+    title: 'Initialize Backward 3-Pointer Merge for Problem 88',
+    description: `nums1 buffer has capacity ${m + n} with ${m} elements: [${rawNums1.slice(0, m).join(', ')}]. nums2 has ${n} elements: [${nums2.join(', ')}]. Three pointers: p1 at end of valid nums1 (${p1}), p2 at end of nums2 (${p2}), p at buffer end (${p}).`,
+    codeLineHighlight: 2,
+    variables: { m, n, p1, p2, p, 'nums1[p1]': p1 >= 0 ? nums1[p1] : 'none', 'nums2[p2]': p2 >= 0 ? nums2[p2] : 'none' },
+    arrayState: {
+      elements: nums1.map((v, idx) => ({
+        value: v,
+        status: idx < m ? 'default' : 'eliminated',
+      })),
+      pointers: [
+        ...(p1 >= 0 ? [{ label: 'p1', index: p1, color: '#38bdf8' }] : []),
+        ...(p >= 0 ? [{ label: 'p', index: p, color: '#34d399' }] : []),
+      ],
+    },
+  });
+
+  while (p2 >= 0) {
+    if (p1 >= 0 && nums1[p1] > nums2[p2]) {
+      const placedVal = nums1[p1];
+      nums1[p] = placedVal;
+
+      steps.push({
+        stepIndex: steps.length,
+        title: `Compare nums1[${p1}] (${nums1[p1]}) > nums2[${p2}] (${nums2[p2]}): Place ${placedVal} at Buffer p=${p}`,
+        description: `nums1[${p1}] (${placedVal}) is larger than nums2[${p2}] (${nums2[p2]}). Copied ${placedVal} into write slot p=${p}. Decrementing p1 and p.`,
+        codeLineHighlight: 4,
+        variables: { p1, p2, p, placedVal, winner: 'nums1' },
+        arrayState: {
+          elements: nums1.map((v, idx) => ({
+            value: v,
+            status: idx === p ? 'matched' : (idx === p1 ? 'comparing' : idx > p ? 'sorted' : 'default'),
+          })),
+          pointers: [
+            { label: 'p1', index: p1, color: '#38bdf8' },
+            { label: 'p', index: p, color: '#34d399' },
+          ],
+        },
+      });
+      p1--;
+    } else {
+      const placedVal = nums2[p2];
+      nums1[p] = placedVal;
+
+      steps.push({
+        stepIndex: steps.length,
+        title: `Place nums2[${p2}] (${placedVal}) at Buffer p=${p}`,
+        description: `${p1 >= 0 ? `nums2[${p2}] (${placedVal}) >= nums1[${p1}] (${nums1[p1]})` : 'nums1 exhausted'}. Placed ${placedVal} from nums2 into write slot p=${p}. Decrementing p2 and p.`,
+        codeLineHighlight: 6,
+        variables: { p1, p2, p, placedVal, winner: 'nums2' },
+        arrayState: {
+          elements: nums1.map((v, idx) => ({
+            value: v,
+            status: idx === p ? 'matched' : (idx > p ? 'sorted' : 'default'),
+          })),
+          pointers: [
+            ...(p1 >= 0 ? [{ label: 'p1', index: p1, color: '#38bdf8' }] : []),
+            { label: 'p', index: p, color: '#34d399' },
+          ],
+        },
+      });
+      p2--;
+    }
+    p--;
+  }
+
+  steps.push({
+    stepIndex: steps.length,
+    title: 'Merge Complete — nums1 is Sorted In-Place',
+    description: `All elements from nums2 integrated into nums1 without extra memory allocation: [${nums1.join(', ')}].`,
+    codeLineHighlight: 8,
+    variables: { result: JSON.stringify(nums1), totalElements: m + n },
+    arrayState: {
+      elements: nums1.map((v) => ({ value: v, status: 'matched' })),
+    },
+  });
+
+  return steps;
+}
+
+/**
+ * 14. Valid Anagram Simulation (Problem 242)
+ */
+export function simulateValidAnagram(rawS: string, rawT: string): VisualizerStep[] {
+  const steps: VisualizerStep[] = [];
+  const s = rawS.toLowerCase().replace(/[^a-z]/g, '');
+  const t = rawT.toLowerCase().replace(/[^a-z]/g, '');
+
+  if (s.length !== t.length) {
+    return [
+      {
+        stepIndex: 0,
+        title: 'Length Mismatch — Cannot Be Anagrams',
+        description: `String s has length ${s.length} ("${s}"), while string t has length ${t.length} ("${t}"). Anagrams must have identical length. Returning false.`,
+        codeLineHighlight: 2,
+        variables: { sLength: s.length, tLength: t.length, isAnagram: false },
+        arrayState: {
+          elements: [{ value: 'Lengths Mismatch', status: 'eliminated' }],
+        },
+      },
+    ];
+  }
+
+  const freq = new Map<string, number>();
+
+  steps.push({
+    stepIndex: 0,
+    title: 'Initialize Frequency Table for Anagram Validation',
+    description: `Comparing s = "${s}" with t = "${t}" (both length ${s.length}). Increment frequencies for characters in s; decrement for t.`,
+    codeLineHighlight: 2,
+    variables: { s, t, length: s.length, mapSize: 0 },
+    arrayState: {
+      elements: s.split('').map((c) => ({ value: c, status: 'default' })),
+    },
+    hashMapState: { entries: [] },
+  });
+
+  for (let i = 0; i < s.length; i++) {
+    const charS = s[i];
+    const prev = freq.get(charS) || 0;
+    freq.set(charS, prev + 1);
+
+    steps.push({
+      stepIndex: steps.length,
+      title: `Step ${i + 1}A: Increment '${charS}' from s (Count: ${prev + 1})`,
+      description: `Seen '${charS}' in s. Incremented count in frequency table.`,
+      codeLineHighlight: 4,
+      variables: { index: i, char: charS, count: prev + 1 },
+      arrayState: {
+        elements: s.split('').map((c, idx) => ({
+          value: c,
+          status: idx === i ? 'active' : (idx < i ? 'visited' : 'default'),
+        })),
+        pointers: [{ label: 's[i]', index: i, color: '#38bdf8' }],
+      },
+      hashMapState: {
+        entries: Array.from(freq.entries()).map(([k, v]) => ({
+          key: k,
+          value: v,
+          status: k === charS ? 'updated' : 'default',
+        })),
+      },
+    });
+  }
+
+  for (let i = 0; i < t.length; i++) {
+    const charT = t[i];
+    const currentCount = freq.get(charT) || 0;
+    const newCount = currentCount - 1;
+    freq.set(charT, newCount);
+
+    const isDeficit = newCount < 0;
+
+    steps.push({
+      stepIndex: steps.length,
+      title: `Step ${i + 1}B: Decrement '${charT}' from t (Count: ${newCount})`,
+      description: isDeficit
+        ? `Character '${charT}' count fell below 0! t contains more '${charT}' than s. Not an anagram.`
+        : `Matched '${charT}' from t. Decremented count to ${newCount}.`,
+      codeLineHighlight: 6,
+      variables: { index: i, char: charT, newCount, deficit: isDeficit },
+      arrayState: {
+        elements: t.split('').map((c, idx) => ({
+          value: c,
+          status: idx === i ? (isDeficit ? 'eliminated' : 'matched') : (idx < i ? 'visited' : 'default'),
+        })),
+        pointers: [{ label: 't[i]', index: i, color: '#fbbf24' }],
+      },
+      hashMapState: {
+        entries: Array.from(freq.entries()).map(([k, v]) => ({
+          key: k,
+          value: v,
+          status: k === charT ? (isDeficit ? 'accessed' : 'updated') : 'default',
+        })),
+      },
+    });
+
+    if (isDeficit) {
+      steps.push({
+        stepIndex: steps.length,
+        title: 'Validation Failed: Character Frequencies Mismatch',
+        description: `Character '${charT}' was not balanced between s and t. Returning false.`,
+        codeLineHighlight: 7,
+        variables: { isAnagram: false, failedChar: charT },
+        arrayState: {
+          elements: t.split('').map((c) => ({ value: c, status: 'eliminated' })),
+        },
+      });
+      return steps;
+    }
+  }
+
+  steps.push({
+    stepIndex: steps.length,
+    title: 'Valid Anagram Confirmed!',
+    description: `All character counts balanced out to exactly 0. Strings "${s}" and "${t}" are valid anagrams. Returning true.`,
+    codeLineHighlight: 8,
+    variables: { isAnagram: true, length: s.length },
+    arrayState: {
+      elements: s.split('').map((c) => ({ value: c, status: 'matched' })),
+    },
+    hashMapState: {
+      entries: Array.from(freq.entries()).map(([k, v]) => ({
+        key: k,
+        value: v,
+        status: 'default',
+      })),
+    },
+  });
+
+  return steps;
+}
+
+/**
+ * 15. Remove Element Simulation (Problem 27)
+ */
+export function simulateRemoveElement(nums: number[], val: number): VisualizerStep[] {
+  const steps: VisualizerStep[] = [];
+  const arr = [...nums];
+  let k = 0;
+
+  steps.push({
+    stepIndex: 0,
+    title: `Initialize Remove Element (val = ${val})`,
+    description: `Scan array of ${arr.length} elements. Overwrite elements equal to ${val} by advancing write pointer k.`,
+    codeLineHighlight: 2,
+    variables: { val, k: 0, arrayLength: arr.length },
+    arrayState: {
+      elements: arr.map((v) => ({ value: v, status: 'default' })),
+      pointers: [{ label: 'k,i', index: 0, color: '#38bdf8' }],
+    },
+  });
+
+  for (let i = 0; i < arr.length; i++) {
+    const isVal = arr[i] === val;
+
+    if (!isVal) {
+      arr[k] = arr[i];
+      steps.push({
+        stepIndex: steps.length,
+        title: `Index ${i} (${arr[i]} !== ${val}): Keep at Write Index k=${k}`,
+        description: `Element ${arr[i]} is not equal to target ${val}. Maintained at slot k=${k}. Incremented k to ${k + 1}.`,
+        codeLineHighlight: 4,
+        variables: { i, valAtI: arr[i], k, action: 'keep' },
+        arrayState: {
+          elements: arr.map((v, idx) => ({
+            value: v,
+            status: idx === k ? 'matched' : (idx < k ? 'sorted' : 'default'),
+          })),
+          pointers: [
+            { label: 'k', index: k, color: '#34d399' },
+            { label: 'i', index: i, color: '#38bdf8' },
+          ],
+        },
+      });
+      k++;
+    } else {
+      steps.push({
+        stepIndex: steps.length,
+        title: `Index ${i} (${arr[i]} === ${val}): Skip Target Element`,
+        description: `Element ${arr[i]} matches removal target ${val}. Skipped without advancing write pointer k.`,
+        codeLineHighlight: 6,
+        variables: { i, valAtI: arr[i], k, action: 'skip' },
+        arrayState: {
+          elements: arr.map((v, idx) => ({
+            value: v,
+            status: idx === i ? 'eliminated' : (idx < k ? 'sorted' : 'default'),
+          })),
+          pointers: [
+            { label: 'k', index: k, color: '#34d399' },
+            { label: 'i', index: i, color: '#ef4444' },
+          ],
+        },
+      });
+    }
+  }
+
+  steps.push({
+    stepIndex: steps.length,
+    title: `Removal Complete: ${k} Elements Retained`,
+    description: `All instances of ${val} eliminated from front of array. First ${k} elements are: [${arr.slice(0, k).join(', ')}].`,
+    codeLineHighlight: 8,
+    variables: { k, resultLength: k },
+    arrayState: {
+      elements: arr.map((v, idx) => ({
+        value: v,
+        status: idx < k ? 'matched' : 'eliminated',
+      })),
+    },
+  });
+
+  return steps;
+}
+
+/**
+ * 16. Remove Duplicates from Sorted Array (Problem 26)
+ */
+export function simulateRemoveDuplicates(nums: number[]): VisualizerStep[] {
+  const steps: VisualizerStep[] = [];
+  if (nums.length <= 1) {
+    return [
+      {
+        stepIndex: 0,
+        title: 'Array Already Unique',
+        description: `Array has ${nums.length} elements. Already unique.`,
+        variables: { k: nums.length },
+        arrayState: { elements: nums.map((v) => ({ value: v, status: 'matched' })) },
+      },
+    ];
+  }
+
+  const arr = [...nums];
+  let slow = 0;
+
+  steps.push({
+    stepIndex: 0,
+    title: 'Initialize Slow & Fast Pointers for Duplicate Removal',
+    description: `Sorted array with ${arr.length} elements. Slow pointer marks end of unique subarray; fast pointer scans.`,
+    codeLineHighlight: 2,
+    variables: { slow: 0, fast: 1, uniqueCount: 1 },
+    arrayState: {
+      elements: arr.map((v) => ({ value: v, status: 'default' })),
+      pointers: [
+        { label: 'Slow', index: 0, color: '#34d399' },
+        { label: 'Fast', index: 1, color: '#38bdf8' },
+      ],
+    },
+  });
+
+  for (let fast = 1; fast < arr.length; fast++) {
+    const isNewUnique = arr[fast] !== arr[slow];
+
+    if (isNewUnique) {
+      slow++;
+      arr[slow] = arr[fast];
+
+      steps.push({
+        stepIndex: steps.length,
+        title: `New Unique Element Found: ${arr[fast]} — Place at Slow Index ${slow}`,
+        description: `arr[${fast}] (${arr[fast]}) differs from arr[${slow - 1}] (${arr[slow - 1]}). Advanced slow pointer to ${slow} and copied value.`,
+        codeLineHighlight: 4,
+        variables: { slow, fast, uniqueValue: arr[fast], uniqueCount: slow + 1 },
+        arrayState: {
+          elements: arr.map((v, idx) => ({
+            value: v,
+            status: idx <= slow ? 'matched' : (idx === fast ? 'active' : 'default'),
+          })),
+          pointers: [
+            { label: 'Slow', index: slow, color: '#34d399' },
+            { label: 'Fast', index: fast, color: '#38bdf8' },
+          ],
+        },
+      });
+    } else {
+      steps.push({
+        stepIndex: steps.length,
+        title: `Duplicate Element ${arr[fast]} at Fast Index ${fast} — Skip`,
+        description: `arr[${fast}] matches arr[${slow}] (${arr[slow]}). Duplicate skipped.`,
+        codeLineHighlight: 6,
+        variables: { slow, fast, duplicateValue: arr[fast], action: 'skip' },
+        arrayState: {
+          elements: arr.map((v, idx) => ({
+            value: v,
+            status: idx === fast ? 'eliminated' : (idx <= slow ? 'matched' : 'default'),
+          })),
+          pointers: [
+            { label: 'Slow', index: slow, color: '#34d399' },
+            { label: 'Fast', index: fast, color: '#fbbf24' },
+          ],
+        },
+      });
+    }
+  }
+
+  const k = slow + 1;
+  steps.push({
+    stepIndex: steps.length,
+    title: `Deduplication Complete: ${k} Unique Elements`,
+    description: `First ${k} elements are unique: [${arr.slice(0, k).join(', ')}]. Completed in O(n) time and O(1) space.`,
+    codeLineHighlight: 8,
+    variables: { k, uniqueSubarray: JSON.stringify(arr.slice(0, k)) },
+    arrayState: {
+      elements: arr.map((v, idx) => ({
+        value: v,
+        status: idx < k ? 'matched' : 'eliminated',
+      })),
+    },
+  });
+
+  return steps;
+}
+

@@ -30,7 +30,7 @@ const ASTRO_BUNDLE_PATHS = [
   "_astro/SolutionTabs.juqG-dkz.js",
   "_astro/sparkles.DZqOujsE.js",
   "_astro/url.CSpEoWIG.js",
-  "_astro/VisualizerEngine.Njng3vup.js",
+  "_astro/VisualizerEngine.BmSr_m5q.js",
   "_astro/x.CRy6MgHK.js"
 ];
 
